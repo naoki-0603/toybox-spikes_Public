@@ -11,13 +11,20 @@ file(GLOB_RECURSE COMMON_SOURCES CONFIGURE_DEPENDS "src/*.cpp")
 add_vs_filter("${COMMON_INCLUDES}" "include")
 add_vs_filter("${COMMON_SOURCES}" "src")
 
-set(DEPENDED_MODULE_NAME "TP_IMGUI" "DirectXMath")
+set(DEPENDED_MODULE_NAME "TP_IMGUI" "DirectXMath" "Tracy::TracyClient")
+
+set(COMMON_INCLUDE_DIRECTORIES 
+    "${THIRD_PARTY_STB_INCLUDES}"
+    "${THIRD_PARTY_TINYGLTF_INCLUDES}"
+    "${PROJECT_SOURCE_DIR}/SpikesKit"
+    "${PROJECT_SOURCE_DIR}/SpikesKit/Common/include"
+)
 
 setup_library(
     SpikesKit_Common 
     "${COMMON_INCLUDES}" 
     "${COMMON_SOURCES}" 
     "${DEPENDED_MODULE_NAME}" 
-    "${PROJECT_SOURCE_DIR}/SpikesKit/Common/include"
+    "${COMMON_INCLUDE_DIRECTORIES}"
     "${PROJECT_SOURCE_DIR}/SpikesKit/SpikesKitPCH.hpp"
 )

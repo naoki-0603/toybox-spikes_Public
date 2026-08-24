@@ -51,6 +51,10 @@ setup_vulkan()
 setup_imgui()
 setup_google_test()
 setup_directx_math()
+setup_stb()
+setup_tinygltf()
+
+setup_tracy()
 
 if (ENABLE_TESTING)
     enable_testing()

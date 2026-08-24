@@ -3,4 +3,5 @@
 # Licensed under the MIT License. See the LICENSE file in the project root,
 # or visit https://opensource.org/licenses/MIT for details.
 
-add_subdirectory(RendererApplication)
+add_subdirectory(OpaqueRenderingDemo)
+add_subdirectory(TransparentRenderingDemo)

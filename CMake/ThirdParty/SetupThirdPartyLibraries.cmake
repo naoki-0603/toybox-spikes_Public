@@ -58,3 +58,29 @@ function(setup_directx_math)
     
     FetchContent_MakeAvailable(DirectXMath)
 endfunction()
+
+function(setup_stb)
+    set(
+        THIRD_PARTY_STB_INCLUDES
+        ${PROJECT_SOURCE_DIR}/SpikesKit/ThirdParty/stb
+        CACHE STRING "STB Libraries" FORCE 
+    )
+endfunction()
+
+function(setup_tinygltf)
+    set(
+        THIRD_PARTY_TINYGLTF_INCLUDES
+        ${PROJECT_SOURCE_DIR}/SpikesKit/ThirdParty/tinygltf
+        CACHE STRING "Tinygltf Libraries" FORCE 
+    )
+endfunction()
+
+function(setup_tracy)
+    FetchContent_Declare(
+        tracy
+        GIT_REPOSITORY https://github.com/wolfpld/tracy.git
+        GIT_TAG 099df3de3dc37eca4712c06b8320fb9c53596edd # v0.14.0
+    )
+
+    FetchContent_MakeAvailable(tracy)
+endfunction()

@@ -6,11 +6,13 @@
 struct VSInput
 {
     float4 m_position : POSITION;
+    float2 m_texcoord : TEXCOORD;
 };
 
 struct VSOutput
 {
-    float4 m_position : SV_Position;
+    float4 m_position : SV_POSITION;
+    float2 m_texcoord : TEXCOORD;
 };
 
 cbuffer Constants : register(b0)

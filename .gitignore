@@ -6,6 +6,7 @@
 # フォルダー
 build/
 build-msvc/
+dev/
 
 *.fbx
 *.png

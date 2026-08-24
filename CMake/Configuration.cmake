@@ -17,6 +17,10 @@ endfunction()
 function(setup_compile_definitions)
     # プロジェクト全体で使用できるマクロの定義
     add_compile_definitions(TS_USE_CXX23)
+
+    # TODO(naoki): プロファイリングを有効にしている場合のみ定義する形に変更する
+    add_compile_definitions(TRACY_ENABLE)
+    
     add_compile_definitions(
         $<$<CONFIG:Debug>:TS_DEBUG>
         $<$<CONFIG:Release>:TS_RELEASE>
