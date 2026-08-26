@@ -1,0 +1,306 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Graphics/RenderResourceManager.hpp"
+
+#include "Graphics/RHI/RHI_Device.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace resource
+		{
+			RenderResourceManager::RenderResourceManager() :
+				m_database(), m_createShaderMutex(),
+				m_createPipelineStateMutex(), m_createBufferMutex(),
+				m_createShaderBindingsLayoutMutex(),
+				m_createTextureMutex(),
+				m_createTextureViewMutex(),
+				m_device()
+			{
+			}
+
+			bool RenderResourceManager::Create(
+				const RenderResourceManagerInitDesc& desc
+			)
+			{
+				if (!desc.m_device)
+				{
+					TS_FATAL_LOG("Deviceがnullptrです。");
+
+					return false;
+				}
+				m_device = desc.m_device;
+
+				return true;
+			}
+
+			bool RenderResourceManager::Destroy()
+			{
+				if (!m_database.Destroy())
+				{
+					return false;
+				}
+
+				return true;
+			}
+
+			ShaderResourceHandle RenderResourceManager::CreateShader(
+				graphics::RHI_ShaderType shaderType,
+				const std::vector<u8>& shaderCode
+			)
+			{
+				graphics::RHI_ShaderDesc desc = {};
+				desc.m_type = shaderType;
+				desc.m_shaderBinarySize = static_cast<u64>(shaderCode.size());
+				desc.m_shaderBinary = shaderCode.data();
+
+				graphics::RHI_Shader* shader = m_device->CreateShader(desc);
+				
+				ShaderResourceHandle handle = {};
+				{
+					std::unique_lock<std::shared_mutex> lock(m_createShaderMutex);
+					handle = m_database.AddShader(shader);
+				}
+
+				return handle;
+			}
+
+			PipelineStateResourceHandle RenderResourceManager::CreateOrGetPipelineState(
+				const graphics::RHI_PipelineStateDesc& desc
+			)
+			{
+				const u64 hash = desc.GetHash();
+
+				PipelineStateResourceHandle handle = {};
+				{
+					std::shared_lock lock(m_createPipelineStateMutex);
+					if (m_database.GetPipelineStateCache(handle, hash))
+					{
+						return handle;
+					}
+				}
+
+				{
+					std::unique_lock<std::shared_mutex> lock(m_createPipelineStateMutex);
+
+					// ロック待ち時に他のスレッドが作っていないかを再度確認
+					if (m_database.GetPipelineStateCache(handle, hash))
+					{
+						return handle;
+					}
+
+					graphics::RHI_PipelineState* pipelineState = m_device->CreatePipelineState(
+						desc
+					);
+
+					handle = m_database.AddPipelineState(pipelineState, hash);
+				}
+
+				return handle;
+			}
+
+			BufferResourceHandle RenderResourceManager::CreateBuffer(
+				const graphics::RHI_BufferDesc& desc
+			)
+			{
+				graphics::RHI_Buffer* buffer = m_device->CreateBuffer(
+					desc
+				);
+
+				BufferResourceHandle handle = {};
+				{
+					std::unique_lock<std::shared_mutex> lock(m_createBufferMutex);
+					handle = m_database.AddBuffer(buffer);
+				}
+
+				return handle;
+			}
+
+			ShaderBindingsLayoutResourceHandle RenderResourceManager::CreateShaderBindingsLayout(
+				const graphics::RHI_ShaderBindingsLayoutDesc& desc
+			)
+			{
+				graphics::RHI_ShaderBindingsLayout* layout = m_device->CreateShaderBindingsLayout(
+					desc
+				);
+
+				ShaderBindingsLayoutResourceHandle handle = {};
+				{
+					std::unique_lock<std::shared_mutex> lock(m_createShaderBindingsLayoutMutex);
+					handle = m_database.AddShaderBindingsLayout(layout);
+				}
+
+				return handle;
+			}
+
+			TextureResourceHandle RenderResourceManager::CreateTexture(
+				const std::vector<u8>& pixels,
+				const IVector2& size,
+				u32 mipLevels,
+				graphics::RHI_Format format
+			)
+			{
+				TextureResourceHandle handle = {};
+				{
+					std::unique_lock<std::shared_mutex> lock(m_createTextureMutex);
+
+					// テクスチャを生成する
+					graphics::RHI_TextureDesc desc = {};
+					desc.m_pixels = pixels;
+					desc.m_size = size;
+					desc.m_format = format;
+					desc.m_usage = graphics::RHI_TextureUsage::ShaderRead;
+					desc.m_type = graphics::RHI_TextureType::Texture2D;
+					desc.m_mipLevels = mipLevels;
+
+					graphics::RHI_Texture* texture = m_device->CreateTexture(
+						desc
+					);
+
+					// テクスチャビュー(SRV)を生成する
+					graphics::RHI_TextureViewDesc viewDesc = {};
+					viewDesc.m_texture = texture;
+					viewDesc.m_type = graphics::RHI_TextureViewType::ShaderResourceView;
+
+					graphics::RHI_TextureView* textureView = m_device->CreateTextureView(
+						viewDesc
+					);
+
+					TextureResourceRecord record = {};
+					record.m_texture = texture;
+					record.m_defaultSRV = textureView;
+
+					handle = m_database.AddTexture(record);
+				}
+				return handle;
+			}
+
+			TextureViewResourceHandle RenderResourceManager::CreateTextureView(const graphics::RHI_TextureViewDesc& desc)
+			{
+				graphics::RHI_TextureView* view = m_device->CreateTextureView(
+					desc
+				);
+
+				TextureViewResourceHandle handle = {};
+				{
+					std::unique_lock<std::shared_mutex> lock(m_createTextureViewMutex);
+					handle = m_database.AddTextureView(view);
+				}
+
+				return handle;
+			}
+
+			SamplerResourceHandle RenderResourceManager::CreateOrGetSampler(
+				const graphics::RHI_SamplerState& state
+			)
+			{
+				SamplerResourceHandle handle = {};
+				const u64 hash = state.GetHash();
+				
+				// キャッシュヒットしたのでハンドルを返す
+				{
+					std::shared_lock<std::shared_mutex> lock(m_createSamplerMutex);
+					if (m_database.GetSamplerCache(handle, hash))
+					{
+						return handle;
+					}
+				}
+
+				{
+					std::unique_lock<std::shared_mutex> lock(m_createSamplerMutex);
+
+					// ロック待ち時に他のスレッドが作っていないかを再度確認
+					if (m_database.GetSamplerCache(handle, hash))
+					{
+						return handle;
+					}
+
+					// サンプラーの生成
+					graphics::RHI_Sampler* sampler = m_device->CreateSampler(
+						state
+					);
+
+					// サンプラー追加とハッシュ追加
+					handle = m_database.AddSampler(sampler, hash);
+				}
+
+				return handle;
+			}
+
+			const graphics::RHI_Shader* RenderResourceManager::FindShader(
+				ShaderResourceHandle handle
+			) const
+			{
+				std::shared_lock<std::shared_mutex> lock(m_createShaderMutex);
+
+				return m_database.FindShader(handle);
+			}
+
+			const graphics::RHI_PipelineState* RenderResourceManager::FindPipelineState(
+				PipelineStateResourceHandle handle
+			) const
+			{
+				std::shared_lock<std::shared_mutex> lock(m_createPipelineStateMutex);
+
+				return m_database.FindPipelineState(handle);
+			}
+
+			const graphics::RHI_Buffer* RenderResourceManager::FindBuffer(
+				BufferResourceHandle handle
+			) const
+			{
+				std::shared_lock<std::shared_mutex> lock(m_createBufferMutex);
+
+				return m_database.FindBuffer(handle);
+			}
+
+			graphics::RHI_Buffer* RenderResourceManager::FindBuffer(BufferResourceHandle handle)
+			{
+				std::shared_lock<std::shared_mutex> lock(m_createBufferMutex);
+
+				return m_database.FindBuffer(handle);
+			}
+
+			const graphics::RHI_ShaderBindingsLayout* RenderResourceManager::FindShaderBindingsLayout(
+				ShaderBindingsLayoutResourceHandle handle
+			) const
+			{
+				std::shared_lock<std::shared_mutex> lock(m_createShaderBindingsLayoutMutex);
+
+				return m_database.FindShaderBindingsLayout(handle);
+			}
+
+			const graphics::RHI_Texture* RenderResourceManager::FindTexture(TextureResourceHandle handle) const
+			{
+				std::shared_lock<std::shared_mutex> lock(m_createTextureMutex);
+
+				return m_database.FindTexture(handle);
+			}
+
+			const graphics::RHI_TextureView* RenderResourceManager::FindTextureDefaultView(TextureResourceHandle handle) const
+			{
+				std::shared_lock<std::shared_mutex> lock(m_createTextureMutex);
+
+				return m_database.FindTextureDefaultView(handle);
+			}
+			
+			const graphics::RHI_TextureView* RenderResourceManager::FindTextureView(TextureViewResourceHandle handle) const
+			{
+				std::shared_lock<std::shared_mutex> lock(m_createTextureViewMutex);
+
+				return m_database.FindTextureView(handle);
+			}
+
+			const graphics::RHI_Sampler* RenderResourceManager::FindSampler(SamplerResourceHandle handle) const
+			{
+				std::shared_lock<std::shared_mutex> lock(m_createSamplerMutex);
+
+				return m_database.FindSampler(handle);
+			}
+		} // namespace resource
+	} // namespace kit
+} // namespace ts

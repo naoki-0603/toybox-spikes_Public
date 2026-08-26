@@ -1,0 +1,50 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Graphics/RenderCommand/RenderCommandBuffer.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			RenderCommandBuffer::RenderCommandBuffer() :
+				m_memoryBlock(), m_currentOffset(), m_commandCount()
+			{
+			}
+
+			RenderCommandBuffer::RenderCommandBuffer(const memory::MemoryBlock& memoryBlock) :
+				m_memoryBlock(memoryBlock), m_currentOffset(),
+				m_commandCount()
+			{
+			}
+
+			RenderCommand* RenderCommandBuffer::AllocateCommand()
+			{
+				const u64 allocateSize = sizeof(RenderCommand);
+				const u64 totalSize = allocateSize + m_memoryBlock.m_currentOffset;
+
+				if (totalSize > m_memoryBlock.m_capacityInBytes)
+				{
+					TS_FATAL_LOG(
+						"メモリサイズを超過しています。\ntotalSize: {}\nCapacity: {}", totalSize, m_memoryBlock.m_capacityInBytes
+					);
+
+					return nullptr;
+				}
+
+				u8* buffer = m_memoryBlock.m_startAddress + m_memoryBlock.m_currentOffset;
+
+				m_memoryBlock.m_currentOffset += allocateSize;
+
+				++m_commandCount;
+
+				// 配置newで割り当て済みのメモリにオブジェクトを構築する
+				return new(buffer) RenderCommand{};
+			}
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts

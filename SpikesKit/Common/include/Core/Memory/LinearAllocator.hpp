@@ -1,0 +1,46 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_CORE_MEMORY_LINEAR_ALLOCATOR_HPP_
+#define SPIKES_KIT_COMMON_CORE_MEMORY_LINEAR_ALLOCATOR_HPP_
+
+#include "Memory.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace memory
+		{
+			class LinearAllocator final
+			{
+			public:
+				LinearAllocator();
+				LinearAllocator(const LinearAllocator&) = delete;
+				LinearAllocator(LinearAllocator&&) noexcept = default;
+				~LinearAllocator() noexcept = default;
+
+			public:
+				[[nodiscard]]
+				bool Create(u64 sizeInBytes);
+
+				[[nodiscard]]
+				bool Destroy();
+
+				[[nodiscard]]
+				MemoryBlock Allocate(u64 sizeInBytes);
+
+				void Reset();
+			private:
+				u64 m_sizeInBytes;
+				u64 m_currentOffset;
+
+				u8* m_buffer;
+			};
+		} // namespace memory
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_CORE_MEMORY_LINEAR_ALLOCATOR_HPP_

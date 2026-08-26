@@ -1,0 +1,282 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Graphics/RenderResourceDatabase.hpp"
+
+#include "Graphics/RHI/RHI_Shader.hpp"
+#include "Graphics/RHI/RHI_PipelineState.hpp"
+#include "Graphics/RHI/RHI_Buffer.hpp"
+#include "Graphics/RHI/RHI_ShaderBindingsLayout.hpp"
+#include "Graphics/RHI/RHI_Texture.hpp"
+#include "Graphics/RHI/RHI_TextureView.hpp"
+#include "Graphics/RHI/RHI_Sampler.hpp"
+#include "Graphics/RHI/RHI_States.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace resource
+		{
+			RenderResourceDatabase::RenderResourceDatabase() :
+				m_samplerCache(), m_pipelineStateCache(),
+				m_shaders(), m_pipelineStates(), 
+				m_buffers(), m_shaderBindingsLayouts(),
+				m_textures(), m_textureViews(),
+				m_samplers()
+			{
+			}
+			
+			ShaderResourceHandle RenderResourceDatabase::AddShader(
+				graphics::RHI_Shader* shader
+			)
+			{
+				return m_shaders.Insert(shader);
+			}
+
+			PipelineStateResourceHandle RenderResourceDatabase::AddPipelineState(
+				graphics::RHI_PipelineState* pipelineState,
+				u64 pipelineStateHash
+			)
+			{
+				const PipelineStateResourceHandle handle = m_pipelineStates.Insert(pipelineState);
+				m_pipelineStateCache.emplace(pipelineStateHash, handle);
+
+				return handle;
+			}
+
+			BufferResourceHandle RenderResourceDatabase::AddBuffer(
+				graphics::RHI_Buffer* buffer
+			)
+			{
+				return m_buffers.Insert(buffer);
+			}
+
+			ShaderBindingsLayoutResourceHandle RenderResourceDatabase::AddShaderBindingsLayout(
+				graphics::RHI_ShaderBindingsLayout* layout
+			)
+			{
+				return m_shaderBindingsLayouts.Insert(layout);
+			}
+
+			TextureResourceHandle RenderResourceDatabase::AddTexture(const TextureResourceRecord& textureRecord)
+			{
+				return m_textures.Insert(textureRecord);
+			}
+
+			TextureViewResourceHandle RenderResourceDatabase::AddTextureView(graphics::RHI_TextureView* view)
+			{
+				return m_textureViews.Insert(view);
+			}
+
+			SamplerResourceHandle RenderResourceDatabase::AddSampler(
+				graphics::RHI_Sampler* sampler,
+				u64 samplerHash
+			)
+			{
+				const SamplerResourceHandle handle = m_samplers.Insert(sampler);
+				m_samplerCache.emplace(samplerHash, handle);
+
+				return handle;
+			}
+
+			const graphics::RHI_Shader* RenderResourceDatabase::FindShader(
+				ShaderResourceHandle handle
+			) const
+			{
+				return (*m_shaders.Get(handle));
+			}
+
+			const graphics::RHI_PipelineState* RenderResourceDatabase::FindPipelineState(
+				PipelineStateResourceHandle handle
+			) const
+			{
+				return (*m_pipelineStates.Get(handle));
+			}
+
+			const graphics::RHI_Buffer* RenderResourceDatabase::FindBuffer(BufferResourceHandle handle) const
+			{
+				return (*m_buffers.Get(handle));
+			}
+
+			graphics::RHI_Buffer* RenderResourceDatabase::FindBuffer(BufferResourceHandle handle)
+			{
+				return (*m_buffers.Get(handle));
+			}
+
+			const graphics::RHI_ShaderBindingsLayout* RenderResourceDatabase::FindShaderBindingsLayout(
+				ShaderBindingsLayoutResourceHandle handle
+			) const
+			{
+				return (*m_shaderBindingsLayouts.Get(handle));
+			}
+
+			const graphics::RHI_Texture* RenderResourceDatabase::FindTexture(TextureResourceHandle handle) const
+			{
+				return (*m_textures.Get(handle)).m_texture;
+			}
+
+			const graphics::RHI_TextureView* RenderResourceDatabase::FindTextureDefaultView(TextureResourceHandle handle) const
+			{
+				return (*m_textures.Get(handle)).m_defaultSRV;
+			}
+
+			const graphics::RHI_TextureView* RenderResourceDatabase::FindTextureView(TextureViewResourceHandle handle) const
+			{
+				return (*m_textureViews.Get(handle));
+			}
+
+			const graphics::RHI_Sampler* RenderResourceDatabase::FindSampler(SamplerResourceHandle handle) const
+			{
+				return (*m_samplers.Get(handle));
+			}
+
+			bool RenderResourceDatabase::RemoveShader(ShaderResourceHandle shaderHandle)
+			{
+				return false;
+			}
+
+			bool RenderResourceDatabase::RemovePipelineState(PipelineStateResourceHandle handle)
+			{
+				return false;
+			}
+
+			bool RenderResourceDatabase::RemoveBuffer(BufferResourceHandle handle)
+			{
+				return false;
+			}
+
+			bool RenderResourceDatabase::RemoveShaderBindingsLayout(ShaderBindingsLayoutResourceHandle handle)
+			{
+				return false;
+			}
+
+			bool RenderResourceDatabase::RemoveTexture(TextureResourceHandle handle)
+			{
+				return false;
+			}
+
+			bool RenderResourceDatabase::RemoveTextureView(TextureViewResourceHandle handle)
+			{
+				return false;
+			}
+
+			bool RenderResourceDatabase::RemoveSampler(SamplerResourceHandle handle)
+			{
+				return false;
+			}
+
+			bool RenderResourceDatabase::GetSamplerCache(
+				SamplerResourceHandle& handle, u64 samplerHash
+			) const
+			{
+				if (m_samplerCache.contains(samplerHash))
+				{
+					handle = m_samplerCache.at(samplerHash);
+
+					return true;
+				}
+
+				return false;
+			}
+
+			bool RenderResourceDatabase::GetPipelineStateCache(
+				PipelineStateResourceHandle& handle, u64 pipelineStateHash
+			) const
+			{
+				if (m_pipelineStateCache.contains(pipelineStateHash))
+				{
+					handle = m_pipelineStateCache.at(pipelineStateHash);
+
+					return true;
+				}
+
+				return false;
+			}
+
+			bool RenderResourceDatabase::Destroy()
+			{
+				for (auto&& shader : m_shaders)
+				{
+					if (!shader->Destroy())
+					{
+						TS_FATAL_LOG("シェーダーの破棄に失敗しました。");
+
+						return false;
+					}
+				}
+
+				for (auto&& pipelineState : m_pipelineStates)
+				{
+					if (!pipelineState->Destroy())
+					{
+						TS_FATAL_LOG("パイプラインステートの破棄に失敗しました。");
+
+						return false;
+					}
+				}
+
+				for (auto&& buffer : m_buffers)
+				{
+					if (!buffer->Destroy())
+					{
+						TS_FATAL_LOG("バッファの破棄に失敗しました。");
+
+						return false;
+					}
+				}
+
+				for (auto&& layout : m_shaderBindingsLayouts)
+				{
+					if (!layout->Destroy())
+					{
+						TS_FATAL_LOG("シェーダーバインディングレイアウトの破棄に失敗しました");
+
+						return false;
+					}
+				}
+
+				for (auto&& texture : m_textures)
+				{
+					if (!texture.m_defaultSRV->Destroy())
+					{
+						TS_FATAL_LOG("テクスチャのSRVの破棄に失敗しました");
+
+						return false;
+					}
+
+					if (!texture.m_texture->Destroy())
+					{
+						TS_FATAL_LOG("テクスチャの破棄に失敗しました");
+
+						return false;
+					}
+				}
+
+				for (auto&& textureView : m_textureViews)
+				{
+					if (!textureView->Destroy())
+					{
+						TS_FATAL_LOG("テクスチャビューの破棄に失敗しました");
+
+						return false;
+					}
+				}
+
+				for (auto&& sampler : m_samplers)
+				{
+					if (!sampler->Destroy())
+					{
+						TS_FATAL_LOG("サンプラーの破棄に失敗しました");
+
+						return false;
+					}
+				}
+
+				return true;
+			}
+		} // namespace resource
+	} // namespace kit
+} // namespace ts

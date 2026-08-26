@@ -1,0 +1,77 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Core/Thread/ThreadManager.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace thread
+		{
+			ThreadManager::ThreadManager() :
+				m_workers(), m_numRenderThreads(),
+				m_numCommonThreads(), m_currentRegisterIndex()
+			{
+			}
+
+			ThreadManager::~ThreadManager() noexcept
+			{
+			}
+
+			bool ThreadManager::Create()
+			{
+				if (k_maxThreads <= 0)
+				{
+					TS_ASSERT(false, "最大スレッド数が0以下です。");
+
+					return false;
+				}
+
+				m_numRenderThreads = k_maxThreads / 3;
+				m_numCommonThreads = k_maxThreads - m_numRenderThreads;
+
+				if (m_numCommonThreads + m_numRenderThreads != k_maxThreads)
+				{
+					TS_ASSERT(
+						false,
+						"割り当てられたスレッドの合計数がスレッド最大数と同じでなければいけません。"
+					);
+
+					return false;
+				}
+
+				m_workers.reserve(k_maxThreads);
+
+				return true;
+			}
+
+			bool ThreadManager::Destroy()
+			{
+				for (auto&& worker : m_workers)
+				{
+					if (worker.joinable())
+					{
+						worker.join();
+					}
+				}
+
+				return true;
+			}
+
+			bool ThreadManager::RegisterWorkersFunc(WorkerFunc func, void* funcData, WorkerType type)
+			{
+				u32 targetCount = (type == WorkerType::Render) ? m_numRenderThreads : m_numCommonThreads;
+
+				for (u32 i = 0; i < targetCount; ++i)
+				{
+					m_workers.emplace_back(func, funcData);
+				}
+
+				return true;
+			}
+		} // namespace thread
+	} // namespace kit
+} // namespace ts

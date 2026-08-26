@@ -1,0 +1,112 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_CAMERA_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_CAMERA_HPP_
+
+namespace ts
+{
+	namespace kit
+	{
+		struct ApplicationContext;
+
+		namespace graphics
+		{
+			class CameraController;
+
+			class Camera
+			{
+			public:
+				Camera(
+					const Vector3& eye,
+					const Vector3& focusPosition,
+					f32 nearZ,
+					f32 farZ,
+					const Vector3& up = Vector3::Up()
+				);
+				virtual ~Camera() noexcept = default;
+
+				void OnUpdate(const ApplicationContext& context);
+				virtual void RecalculateProjection() = 0;
+
+				void SetController(const Ref<CameraController>& controller);
+			public:
+				virtual void OnWindowResize(const IVector2& size) = 0;
+
+			public:
+				[[nodiscard]]
+				const Vector3& GetEye() const noexcept { return m_eye; }
+
+				[[nodiscard]]
+				const Matrix& GetView() const noexcept { return m_view; }
+
+				[[nodiscard]]
+				const Matrix& GetProjection() const noexcept { return m_projection; }
+
+				[[nodiscard]]
+				const Matrix& GetViewProjection() const noexcept { return m_viewProjection; }
+			protected:
+				Matrix m_world;
+				Matrix m_view;
+				Matrix m_projection;
+				Matrix m_viewProjection;
+
+				Vector3 m_eye;
+				Vector3 m_focusPosition;
+				Vector3 m_eulerAngles;
+				Vector3 m_up;
+
+				f32 m_nearZ;
+				f32 m_farZ;
+
+				Ref<CameraController> m_controller;
+			};
+
+			class PerspectiveCamera final : public Camera
+			{
+			public:
+				PerspectiveCamera(
+					const Vector3& eye,
+					const Vector3& focusPosition,
+					f32 fovAngleY,
+					f32 aspectRatio,
+					f32 nearZ,
+					f32 farZ,
+					const Vector3& up = Vector3::Up()
+				);
+				~PerspectiveCamera() noexcept override = default;
+
+			public:
+				void RecalculateProjection() override;
+				void OnWindowResize(const IVector2& size) override;
+			private:
+				f32 m_fovAngleY;
+				f32 m_aspectRatio;
+			};
+
+			class OrthographicCamera final : public Camera
+			{
+			public:
+				OrthographicCamera(
+					const Vector3& eye,
+					const Vector3& focusPosition,
+					const IVector2& screenSize,
+					f32 nearZ,
+					f32 farZ,
+					const Vector3& up = Vector3::Up()
+				);
+				~OrthographicCamera() noexcept override = default;
+
+			public:
+				void RecalculateProjection() override;
+				void OnWindowResize(const IVector2& size) override;
+			private:
+				IVector2 m_screenSize;
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_CAMERA_HPP_

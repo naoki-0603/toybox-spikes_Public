@@ -1,0 +1,45 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_MATH_UUID_HPP_
+#define SPIKES_KIT_COMMON_MATH_UUID_HPP_
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace math
+		{
+			class UUID
+			{
+			public:
+				UUID();
+				UUID(const UUID&) = delete;
+				UUID(UUID&&) noexcept = default;
+				~UUID() noexcept = default;
+
+				UUID& operator=(const UUID&) = delete;
+				UUID& operator=(UUID&&) noexcept = default;
+
+				bool operator==(const UUID& rhs) const;
+				bool operator!=(const UUID& rhs) const;
+
+				void Generate();
+
+				[[nodiscard]]
+				const std::string& GetUUIDChecked() const;
+			private:
+				std::string m_uuid;
+
+				bool m_generated;
+			};
+
+			[[nodiscard]]
+			UUID GenerateUUID();
+		} // namespace math
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_MATH_UUID_HPP_

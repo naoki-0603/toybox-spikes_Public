@@ -1,0 +1,56 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_ASSET_ASSET_HPP_
+#define SPIKES_KIT_COMMON_ASSET_ASSET_HPP_
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace asset
+		{
+			/*using AssetTimestamp = u64;
+
+			enum class AssetState : u32
+			{
+				Loading, /// 読み込み中
+				Completed, /// 読み込み完了
+				Failed, /// 読み込み失敗
+
+				Max
+			};
+
+			class Asset
+			{
+			public:
+				Asset();
+				Asset(const Asset&) = delete;
+				Asset(Asset&&) noexcept = default;
+				virtual ~Asset() noexcept = default;
+
+				Asset& operator=(const Asset&) = delete;
+				Asset& operator=(Asset&&) noexcept = default;
+			public:
+				[[nodiscard]]
+				bool IsLoading() const noexcept { return (m_state == AssetState::Loading); }
+
+				[[nodiscard]]
+				bool IsCompleted() const noexcept { return (m_state == AssetState::Completed); }
+
+				[[nodiscard]]
+				bool IsFailed() const noexcept { return (m_state == AssetState::Failed); }
+			protected:
+				fs::path m_filePath;
+
+				AssetTimestamp m_lastWriteTimestamp;
+				AssetHandle m_handle;
+				AssetState m_state;
+			};*/
+		} // namespace asset
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_ASSET_ASSET_HPP_

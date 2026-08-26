@@ -1,0 +1,18 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Graphics/RHI/RHI_Common.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			RHI_GraphicsAPI g_graphicsAPI = RHI_GraphicsAPI::DX11;
+		} // namespace rhi
+	} // namespace kit
+} // namespace ts
+

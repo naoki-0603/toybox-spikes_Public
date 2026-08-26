@@ -1,0 +1,56 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_WINDOW_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_WINDOW_HPP_
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace internal
+		{
+			LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+		} // namespace internal
+
+		class Window 
+		{
+		public:
+			Window();
+			~Window() noexcept = default;
+
+			[[nodiscard]]
+			bool Create(std::string_view name, const IVector2& size);
+
+			[[nodiscard]]
+			bool PollEvents() const noexcept;
+
+			[[nodiscard]]
+			bool Destroy();
+		public:
+			void Resize(const IVector2& size);
+		public:
+			void SetSize(const IVector2& size);
+			void SetWindowTitle(const std::string& title);
+
+			[[nodiscard]]
+			const IVector2& GetSize() const noexcept { return m_size; }
+
+			[[nodiscard]]
+			HWND GetHandle() const noexcept { return m_handle; }
+
+			[[nodiscard]]
+			event::EventDispatcher* GetResizeEventDispatcher() noexcept { return &m_resizeEventDispatcher; }
+		private:
+			std::string m_name;
+			IVector2 m_size;
+			HWND m_handle;
+
+			event::EventDispatcher m_resizeEventDispatcher;
+		};
+	} // namespace kit
+} // namespace ts
+
+#endif // !SPIKES_KIT_COMMON_GRAPHICS_WINDOW_HPP_

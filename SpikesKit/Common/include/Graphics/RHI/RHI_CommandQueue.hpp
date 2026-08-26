@@ -1,0 +1,59 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RHI_COMMAND_QUEUE_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RHI_COMMAND_QUEUE_HPP_
+
+#include "IRHI.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			class RHI_Device;
+			class RHI_Fence;
+
+			class RenderCommandBuffer;
+
+			enum class CommandQueueType : i32
+			{
+				Graphics = 0,
+				Compute,
+
+				Max
+			};
+
+			class RHI_CommandQueue : public IRHI
+			{
+			public:
+				RHI_CommandQueue();
+				RHI_CommandQueue(const RHI_CommandQueue&) = delete;
+				RHI_CommandQueue(RHI_CommandQueue&&) noexcept = default;
+				virtual ~RHI_CommandQueue() noexcept override = default;
+
+				RHI_CommandQueue& operator=(const RHI_CommandQueue&) = delete;
+				RHI_CommandQueue& operator=(RHI_CommandQueue&&) noexcept = default;
+			public:
+				[[nodiscard]]
+				virtual bool Create(
+					RHI_Device* device,
+					CommandQueueType type
+				) = 0;
+			public:
+				/// CPU｜GPU間の同期
+				virtual void Signal(RHI_Fence* fence, u64 value) = 0;
+
+				/// GPU｜GPU間の同期
+				virtual void Wait(RHI_Fence* fence, u64 value) = 0;
+
+				virtual void Execute(const std::vector<RenderCommandBuffer>& commandBuffers) = 0;
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RHI_COMMAND_QUEUE_HPP_

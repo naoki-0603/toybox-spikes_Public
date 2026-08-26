@@ -1,0 +1,63 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_CORE_THREAD_THREAD_POOL_HPP_
+#define SPIKES_KIT_COMMON_CORE_THREAD_THREAD_POOL_HPP_
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace thread
+		{
+			using ThreadPoolHandle = u32;
+			using Task = void (*)();
+
+			static constexpr ThreadPoolHandle k_invalidHandle = ThreadPoolHandle(-1);
+			static const u32 k_maxThreads = std::thread::hardware_concurrency();
+
+			class [[nodiscard]] ThreadPool final
+			{
+			public:
+				ThreadPool();
+				ThreadPool(const ThreadPool&) = delete;
+				ThreadPool(ThreadPool&&) noexcept = default;
+				~ThreadPool() noexcept = default;
+
+				ThreadPool& operator=(const ThreadPool&) = delete;
+				ThreadPool& operator=(ThreadPool&&) noexcept = default;
+			public:
+				[[nodiscard]]
+				bool Create(u32 numThreads = k_maxThreads);
+
+				[[nodiscard]]
+				bool Destroy();
+			public:
+				void Submit(Task&& task);
+
+				[[nodiscard]]
+				bool TryExecuteOneTask();
+
+				[[nodiscard]]
+				u32 GetNumThreads() const noexcept { return m_numThreads; }
+			private:
+				void Work();
+
+			private:
+				std::queue<Task> m_tasks;
+				std::vector<std::thread> m_workers;
+
+				std::condition_variable m_conditionVariable;
+				std::mutex m_mutex;
+
+				u32 m_numThreads;
+
+				bool m_stop;
+			};
+		} // namespace thread
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_CORE_THREAD_THREAD_POOL_HPP_

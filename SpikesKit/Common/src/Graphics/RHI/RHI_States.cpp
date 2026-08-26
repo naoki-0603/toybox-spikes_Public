@@ -1,0 +1,186 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Graphics/RHI/RHI_States.hpp"
+
+#include "Core/Hash.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			RHI_RasterizerState RHI_RasterizerState::GetFillSolidCullBack()
+			{
+				static RHI_RasterizerState state = {};
+				state.m_fillMode = RHI_FillMode::Solid;
+				state.m_cullMode = RHI_CullMode::Back;
+				state.m_frontCounterClockwise = false;
+				state.m_scissorEnable = false;
+				state.m_multisampleEnable = false;
+				state.m_depthClipEnable = true;
+				state.m_depthBias = 0;
+				state.m_depthBiasClamp = 0.0f;
+				state.m_slopeScaledDepthBias = 0.0f;
+
+				return state;
+			}
+
+			RHI_RasterizerState RHI_RasterizerState::GetFillSolidCullBackWireframe()
+			{
+				static RHI_RasterizerState state = {};
+				state.m_fillMode = RHI_FillMode::Wireframe;
+				state.m_cullMode = RHI_CullMode::Back;
+				state.m_frontCounterClockwise = false;
+				state.m_scissorEnable = false;
+				state.m_multisampleEnable = false;
+				state.m_depthClipEnable = true;
+				state.m_depthBias = 0;
+				state.m_depthBiasClamp = 0.0f;
+				state.m_slopeScaledDepthBias = 0.0f;
+
+				return state;
+			}
+
+			RHI_SamplerState RHI_SamplerState::GetPoint()
+			{
+				static RHI_SamplerState state = {};
+				state.m_filter = RHI_SamplerFilter::Point;
+				state.m_addressU = RHI_SamplerTextureAddress::Wrap;
+				state.m_addressV = RHI_SamplerTextureAddress::Wrap;
+				state.m_addressW = RHI_SamplerTextureAddress::Wrap;
+				state.m_mipLODBias = 0.0f;
+				state.m_borderColor = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+				state.m_minLOD = 0.0f;
+				state.m_maxLOD = 3.402823466e+38f;
+	
+				return state;
+			}
+
+			RHI_SamplerState RHI_SamplerState::GetLinear()
+			{
+				static RHI_SamplerState state = {};
+				state.m_filter = RHI_SamplerFilter::Linear;
+				state.m_addressU = RHI_SamplerTextureAddress::Wrap;
+				state.m_addressV = RHI_SamplerTextureAddress::Wrap;
+				state.m_addressW = RHI_SamplerTextureAddress::Wrap;
+				state.m_mipLODBias = 0.0f;
+				state.m_borderColor = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+				state.m_minLOD = 0.0f;
+				state.m_maxLOD = 3.402823466e+38f;
+
+				return state;
+			}
+
+			RHI_SamplerState RHI_SamplerState::GetLinearRepeat()
+			{
+				static RHI_SamplerState state = {};
+
+				return state;
+			}
+
+			RHI_SamplerState RHI_SamplerState::GetAnisotropic()
+			{
+				static RHI_SamplerState state = {};
+				state.m_filter = RHI_SamplerFilter::Anisotropic;
+				state.m_addressU = RHI_SamplerTextureAddress::Wrap;
+				state.m_addressV = RHI_SamplerTextureAddress::Wrap;
+				state.m_addressW = RHI_SamplerTextureAddress::Wrap;
+				state.m_mipLODBias = 0.0f;
+				state.m_borderColor = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+				state.m_minLOD = 0.0f;
+				state.m_maxLOD = 3.402823466e+38f;
+				state.m_maxAnisotropy = 16u;
+
+				return state;
+			}
+
+			u64 RHI_SamplerState::GetHash() const
+			{
+				u64 seed = 0u;
+
+				hash::HashCombine(seed, m_filter);
+				hash::HashCombine(seed, m_addressU);
+				hash::HashCombine(seed, m_addressV);
+				hash::HashCombine(seed, m_addressW);
+				hash::HashCombine(seed, m_mipLODBias);
+				hash::HashCombine(seed, m_maxAnisotropy);
+				hash::HashCombine(seed, m_comparisonFunc);
+				hash::HashCombine(seed, m_borderColor.x);
+				hash::HashCombine(seed, m_borderColor.y);
+				hash::HashCombine(seed, m_borderColor.z);
+				hash::HashCombine(seed, m_borderColor.w);
+				hash::HashCombine(seed, m_minLOD);
+				hash::HashCombine(seed, m_maxLOD);
+
+				return seed;
+			}
+
+			RHI_BlendState RHI_BlendState::GetNoBlend()
+			{
+				static RHI_BlendState state = {};
+				state.m_alphaToCoverageEnable = false;
+				state.m_blendEnable = false;
+				state.m_srcBlend = RHI_BlendMode::SrcColor;
+				state.m_destBlend = RHI_BlendMode::Zero;
+				state.m_blendOp = RHI_BlendOperation::Add;
+				state.m_srcBlendAlpha = RHI_BlendMode::SrcAlpha;
+				state.m_destBlendAlpha = RHI_BlendMode::Zero;
+				state.m_blendOpAlpha = RHI_BlendOperation::Add;
+				state.m_renderTargetWriteMask = RHI_ColorWriteMask::WriteEnableAll;
+
+				return state;
+			}
+
+			RHI_BlendState RHI_BlendState::GetAlphaBlend()
+			{
+				static RHI_BlendState state = {};
+				state.m_blendEnable = true;
+				state.m_alphaToCoverageEnable = false;
+				state.m_srcBlend = RHI_BlendMode::SrcAlpha;
+				state.m_destBlend = RHI_BlendMode::InvSrcAlpha;
+				state.m_blendOp = RHI_BlendOperation::Add;
+				state.m_srcBlendAlpha = RHI_BlendMode::One;
+				state.m_destBlendAlpha = RHI_BlendMode::Zero;
+				state.m_renderTargetWriteMask = RHI_ColorWriteMask::WriteEnableAll;
+
+				return state;
+			}
+
+			RHI_DepthStencilState RHI_DepthStencilState::GetDepthOnStencilOn()
+			{
+				static RHI_DepthStencilState state = {};
+				state.m_depthEnable = true;
+				state.m_depthWriteMask = RHI_DepthWriteMask::All;
+				state.m_depthFunc = RHI_ComparsionFunc::LessEqual;
+				state.m_stencilEnable = true;
+				state.m_stencilReadMask = 0xFFui8;
+				state.m_stencilWriteMask = 0xFFui8;
+				state.m_frontFace.m_stencilFailOp = RHI_StencilOperation::Keep;
+				state.m_frontFace.m_stencilDepthFailOp = RHI_StencilOperation::Keep;
+				state.m_frontFace.m_stencilPassOp = RHI_StencilOperation::Replace;
+				state.m_frontFace.m_stencilFunc = RHI_ComparsionFunc::GreaterEqual;
+				state.m_backFace.m_stencilFailOp = RHI_StencilOperation::Keep;
+				state.m_backFace.m_stencilDepthFailOp = RHI_StencilOperation::Keep;
+				state.m_backFace.m_stencilPassOp = RHI_StencilOperation::Replace;
+				state.m_backFace.m_stencilFunc = RHI_ComparsionFunc::GreaterEqual;
+
+				return state;
+			}
+
+			RHI_DepthStencilState RHI_DepthStencilState::GetDeptnOnWriteOffStencilOff()
+			{
+				static RHI_DepthStencilState state = {};
+				state.m_depthEnable = true;
+				state.m_depthWriteMask = RHI_DepthWriteMask::Zero;
+				state.m_depthFunc = RHI_ComparsionFunc::LessEqual;
+				state.m_stencilEnable = false;
+
+				return state;
+			}
+		} // namespac graphics
+	} // namespace kit
+} // namespace ts

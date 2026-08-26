@@ -1,0 +1,89 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_SHADER_BINDINGS_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_SHADER_BINDINGS_HPP_
+
+#include "IRHI.hpp"
+
+#include "RHI_Types.hpp"
+
+#include "RHI_States.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			class RHI_Device;
+			class RHI_Buffer;
+			class RHI_TextureView;
+		} // namespace graphics
+
+		namespace graphics
+		{
+			// 仮置き
+			constexpr u32 k_maxCBVSlots = 14u;
+			constexpr u32 k_maxSRVSlots = 128u;
+
+			struct RHI_ShaderBindingsState final
+			{
+				struct ConstantBuffers final
+				{
+					u32 m_minSlot{ k_maxCBVSlots };
+					u32 m_maxSlot{};
+
+					std::array<const RHI_Buffer*, k_maxCBVSlots> m_buffers{};
+				};
+
+				struct TextureViews final
+				{
+					u32 m_minSlot{ k_maxSRVSlots };
+					u32 m_maxSlot{};
+
+					std::array<const RHI_TextureView*, k_maxSRVSlots> m_views{};
+				};
+
+				ConstantBuffers m_vsConstantBuffers{};
+				ConstantBuffers m_psConstantBuffers{};
+
+				TextureViews m_psTextureViews{};
+			};
+
+			class RHI_ShaderBindings final
+			{
+			public:
+				RHI_ShaderBindings();
+				RHI_ShaderBindings(const RHI_ShaderBindings&) = delete;
+				RHI_ShaderBindings(RHI_ShaderBindings&&) noexcept = default;
+				~RHI_ShaderBindings() noexcept = default;
+
+				RHI_ShaderBindings& operator=(const RHI_ShaderBindings&) = delete;
+				RHI_ShaderBindings& operator=(RHI_ShaderBindings&&) noexcept = default;
+			public:
+				void SetConstantBuffer(
+					u32 slot,
+					const RHI_Buffer* buffer,
+					RHI_ShaderBindingsVisibility visibility = RHI_ShaderBindingsVisibility::All
+				);
+
+				void SetTextureView(
+					u32 slot,
+					const RHI_TextureView* view,
+					RHI_ShaderBindingsVisibility visibility = RHI_ShaderBindingsVisibility::All
+				);
+			public:
+				[[nodiscard]]
+				const RHI_ShaderBindingsState& GetState() const noexcept { return m_shaderBindingsState; }
+
+			protected:
+				RHI_ShaderBindingsState m_shaderBindingsState;
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts 
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_SHADER_BINDINGS_HPP_

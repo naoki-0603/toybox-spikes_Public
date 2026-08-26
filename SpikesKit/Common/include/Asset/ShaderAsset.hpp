@@ -1,0 +1,26 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_ASSET_SHADER_ASSET_HPP_
+#define SPIKES_KIT_COMMON_ASSET_SHADER_ASSET_HPP_
+
+#include "Asset/AssetTypes.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace asset
+		{
+			struct ShaderAsset final
+			{
+				AssetMetadata m_metadata{};
+				ShaderResourceHandle m_resourceHandle{};
+			};
+		} // namespace asset
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_ASSET_SHADER_ASSET_HPP_

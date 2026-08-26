@@ -1,0 +1,48 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RENDER_COMMAND_RENDER_COMMAND_BUFFER_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RENDER_COMMAND_RENDER_COMMAND_BUFFER_HPP_
+
+#include "RenderCommand.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			class RenderCommandBuffer final
+			{
+			public:
+				RenderCommandBuffer();
+				RenderCommandBuffer(const memory::MemoryBlock& memoryBlock);
+				RenderCommandBuffer(const RenderCommandBuffer&) = default;
+				RenderCommandBuffer(RenderCommandBuffer&&) noexcept = default;
+				~RenderCommandBuffer() noexcept = default;
+
+				RenderCommandBuffer& operator=(const RenderCommandBuffer&) = default;
+				RenderCommandBuffer& operator=(RenderCommandBuffer&&) noexcept = default;
+			public:
+				[[nodiscard]]
+				RenderCommand* AllocateCommand();
+
+			public:
+				[[nodiscard]]
+				u32 GetCommandCount() const noexcept { return m_commandCount; }
+
+				[[nodiscard]]
+				u8* GetBufferStart() const noexcept { return m_memoryBlock.m_startAddress; }
+			private:
+				memory::MemoryBlock m_memoryBlock;
+
+				u64 m_currentOffset;
+				u32 m_commandCount;
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RENDER_COMMAND_RENDER_COMMAND_BUFFER_HPP_

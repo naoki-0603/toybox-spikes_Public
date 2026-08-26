@@ -1,0 +1,105 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_DX11_GRAPHICS_RHI_DX11_DEVICE_HPP_
+#define SPIKES_KIT_DX11_GRAPHICS_RHI_DX11_DEVICE_HPP_
+
+#include "Graphics/RHI/RHI_Device.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace dx11
+		{
+			class DX11_StateManager;
+			class DX11_Texture;
+
+			class DX11_Device final : public graphics::RHI_Device
+			{
+			public:
+				DX11_Device();
+				DX11_Device(const DX11_Device&) = delete;
+				DX11_Device(DX11_Device&&) noexcept = default;
+				~DX11_Device() noexcept override = default;
+
+				DX11_Device& operator=(const DX11_Device&) = delete;
+				DX11_Device& operator=(DX11_Device&&) noexcept = default;
+
+			public:
+				[[nodiscard]]
+				bool Create(
+					graphics::RHI_PhyisicalDevice* phyisicalDevice,
+					graphics::DeviceOptions options
+				) override;
+
+				[[nodiscard]]
+				bool Destroy() override;
+
+			public:
+				[[nodiscard]]
+				graphics::RHI_CommandQueue* CreateCommandQueue(
+					graphics::CommandQueueType type
+				) override;
+
+				[[nodiscard]]
+				graphics::RHI_Texture* CreateTexture(const graphics::RHI_TextureDesc& desc) override;
+
+				[[nodiscard]]
+				graphics::RHI_Shader* CreateShader(
+					const graphics::RHI_ShaderDesc& desc
+				) override;
+
+				[[nodiscard]]
+				graphics::RHI_TextureView* CreateTextureView(
+					const graphics::RHI_TextureViewDesc& desc
+				) override;
+
+				[[nodiscard]]
+				graphics::RHI_PipelineState* CreatePipelineState(
+					const graphics::RHI_PipelineStateDesc& desc
+				) override;
+
+				[[nodiscard]]
+				graphics::RHI_ShaderBindingsLayout* CreateShaderBindingsLayout(
+					const graphics::RHI_ShaderBindingsLayoutDesc& desc
+				) override;
+
+				[[nodiscard]]
+				graphics::RHI_Buffer* CreateBuffer(
+					const graphics::RHI_BufferDesc& desc
+				) override;
+
+				[[nodiscard]]
+				graphics::RHI_SwapChain* CreateSwapChain(
+					const graphics::RHI_SwapChainDesc& desc
+				) override;
+
+				[[nodiscard]]
+				graphics::RHI_Sampler* CreateSampler(
+					const graphics::RHI_SamplerState& state
+				) override;
+			public:
+				[[nodiscard]]
+				ID3D11Device* GetNativeDevice() const { return m_device.Get(); }
+
+				[[nodiscard]]
+				ID3D11DeviceContext* GetNativeDeviceContext() const { return m_context.Get(); }
+			private:
+				void Release() override;
+
+			private:
+				ComPtr<ID3D11Device> m_device;
+				ComPtr<ID3D11Debug> m_debug;
+				ComPtr<ID3D11DeviceContext> m_context; // CreateCommandQueueが呼び出された段階で所有権が共有される
+
+				DX11_StateManager* m_stateManager;
+			};
+
+		} // namespace dx11
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_DX11_GRAPHICS_RHI_DX11_DEVICE_HPP_

@@ -1,0 +1,44 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_DX11_GRAPHICS_RHI_DX11_COMMAND_ALLOCATOR_HPP_
+#define SPIKES_KIT_DX11_GRAPHICS_RHI_DX11_COMMAND_ALLOCATOR_HPP_
+
+#include "Graphics/RHI/RHI_CommandAllocator.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace dx11
+		{
+			class DX11_CommandAllocator final : public graphics::RHI_CommandAllocator
+			{
+			public:
+				DX11_CommandAllocator();
+				DX11_CommandAllocator(const DX11_CommandAllocator&) = delete;
+				DX11_CommandAllocator(DX11_CommandAllocator&&) noexcept = default;
+				~DX11_CommandAllocator() noexcept override = default;
+
+				DX11_CommandAllocator& operator=(const DX11_CommandAllocator&) = delete;
+				DX11_CommandAllocator& operator=(DX11_CommandAllocator&&) noexcept = default;
+			public:
+				[[nodiscard]]
+				virtual bool Create(
+					const graphics::RHI_Device* device,
+					graphics::CommandAllocatorType type
+				) override;
+
+				[[nodiscard]]
+				virtual bool Destroy() override;
+
+			private:
+				void Release() override;
+			};
+		} // namespace dx11
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_DX11_GRAPHICS_RHI_DX11_COMMAND_ALLOCATOR_HPP_

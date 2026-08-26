@@ -1,0 +1,72 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_MESH_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_MESH_HPP_
+
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			class Material;
+
+			class Mesh
+			{
+			public:
+				struct SubMesh
+				{
+
+				};
+			public:
+				Mesh();
+				virtual ~Mesh() noexcept = default;
+
+				virtual void OnUpdate() = 0;
+				virtual void OnRender() = 0;
+
+				void AddSubMesh(
+					const Ref<Material>& material,
+					const SubMesh& subMesh
+				);
+			protected:
+				// std::unordered_map<math::UUID, std::vector<SubMesh>> m_subMeshes;
+			};
+
+			class StaticMesh final : public Mesh
+			{
+			public:
+				struct Vertex
+				{
+					Vector3 m_position{};
+					Vector3 m_normal{};
+					Vector2 m_texcoord{};
+				};
+			public:
+				StaticMesh();
+				~StaticMesh() noexcept override = default;
+
+				void OnUpdate() override;
+				void OnRender() override;
+			};
+
+			class SkinnedMesh final : public Mesh
+			{
+			public:
+				struct Vertex
+				{
+
+				};
+			public:
+				void OnUpdate() override;
+				void OnRender() override;
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif // !SPIKES_KIT_COMMON_GRAPHICS_MESH_HPP_

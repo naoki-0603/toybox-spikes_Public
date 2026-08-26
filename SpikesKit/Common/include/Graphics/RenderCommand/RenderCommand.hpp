@@ -1,0 +1,146 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RENDER_COMMAND_RENDER_COMMAND_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RENDER_COMMAND_RENDER_COMMAND_HPP_
+
+#include "Graphics/RHI/RHI_TextureView.hpp"
+#include "Graphics/RHI/RHI_Viewport.hpp"
+#include "Graphics/RHI/RHI_ResourceBarrier.hpp"
+#include "Graphics/RHI/RHI_Format.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			class RHI_Buffer;
+			class RHI_Shader;
+			class RHI_ShaderBindings;
+			class RHI_PipelineState;
+
+			enum class RenderCommandType : i32
+			{
+				TransitonResourceState = 0,
+				ClearRenderTargetView,
+				ClearDepthStencilView,
+				SetRenderTargets,
+				SetViewports,
+				SetShaderBindings,
+				SetPipelineState,
+				SetVertexBuffers,
+				SetIndexBuffer,
+				UpdateConstantBuffer,
+				UpdateSubresources,
+				Draw,
+				DrawIndexed,
+				DrawInstanced,
+				DrawIndexedInstanced,
+
+				Max
+			};
+
+			struct alignas(16) RenderCommand final
+			{
+				RenderCommandType m_type{};
+
+				union
+				{
+					struct
+					{
+						RHI_Buffer* m_buffer; RHI_ResourceState m_before; RHI_ResourceState m_after;
+					} m_transitonResourceState;
+
+					struct
+					{
+						RHI_TextureView* m_rtv;
+						Vector4 m_clearColor;
+					} m_clearRenderTargetView;
+
+					struct
+					{
+						RHI_TextureView* m_dsv;
+						RHI_DepthClearFlags m_clearFlags;
+						f32 m_depth;
+						u32 m_stencil;
+					} m_clearDepthStencilView;
+
+					struct
+					{
+						RHI_TextureView* const* m_rtvs; u32 m_numRTVS; RHI_TextureView* m_dsv;
+					} m_setRenderTargets;
+
+					struct
+					{
+						const RHI_Viewport** m_viewports;
+						u32 m_numViewports;
+					} m_setViewports;
+
+					struct
+					{
+						const RHI_ShaderBindings* m_shaderBindings;
+					} m_setShaderBindings;
+
+					struct
+					{
+						const RHI_PipelineState* m_pipelineState;
+					} m_setPipelineState;
+
+					struct
+					{
+						u32 m_startSlot, m_numViews;
+						const RHI_Buffer** m_vertexBuffers;
+					} m_setVertexBuffers;
+
+					struct
+					{
+						RHI_Format m_format;
+						const RHI_Buffer* m_indexBuffer;
+					} m_setIndexBuffer;
+
+					struct
+					{
+						const void* m_data;
+						u64 m_dataSize;
+						
+						const RHI_Buffer* m_constantBuffer;
+					} m_updateConstantBuffer;
+
+					struct
+					{
+						u64 m_srcDataSize;
+						const void* m_srcData;
+						const RHI_Buffer* m_buffer;
+					} m_updateSubresources;
+
+					struct
+					{
+						u32 m_vertexCount; u32 m_vertexStart;
+					} m_draw;
+
+					struct
+					{
+						u32 m_indexCount; u32 m_startIndexLocation; i32 m_baseVertexLocation;
+					} m_drawIndexed;
+
+					struct
+					{
+						u32 m_vertexCountPerInstance; u32 m_instanceCount; u32 m_startVertexLocation;
+						u32 m_startInstanceLocation;
+					} m_drawInstanced;
+
+					struct
+					{
+						u32 m_indexCountPerInstance; u32 m_instanceCount; u32 m_startIndexLocation;
+						i32 m_baseVertexLocation; u32 m_startInstanceLocation;
+					} m_drawIndexedInstanced;
+				};
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RENDER_COMMAND_RENDER_COMMAND_HPP_

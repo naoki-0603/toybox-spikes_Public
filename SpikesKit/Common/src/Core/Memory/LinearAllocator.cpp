@@ -1,0 +1,74 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Core/Memory/LinearAllocator.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace memory
+		{
+			LinearAllocator::LinearAllocator() :
+				m_sizeInBytes(), m_currentOffset(),
+				m_buffer()
+			{
+			}
+
+			bool LinearAllocator::Create(u64 sizeInBytes)
+			{
+				m_buffer = new u8[sizeInBytes];
+				if (!m_buffer)
+				{
+					TS_FATAL_LOG("メモリの確保に失敗しました。SizeInBytes: {}", sizeInBytes);
+
+					return false;
+				}
+				m_sizeInBytes = sizeInBytes;
+
+				return true;
+			}
+
+			bool LinearAllocator::Destroy()
+			{
+				if (!m_buffer)
+				{
+					return false;
+				}
+
+				TS_SAFE_RELEASE_ARRAY(m_buffer);
+
+				return true;
+			}
+
+			MemoryBlock LinearAllocator::Allocate(u64 sizeInBytes)
+			{
+				const u64 totalSizeInBytes = m_currentOffset + sizeInBytes;
+				if (totalSizeInBytes > m_sizeInBytes)
+				{
+					TS_FATAL_LOG(
+						"メモリサイズを超過しています。\ntotalSizeInBytes: {}\nSizeInBytes: {}", totalSizeInBytes, m_sizeInBytes
+					);
+
+					return {};
+				}
+
+				MemoryBlock block = {};
+				block.m_startAddress = m_buffer + m_currentOffset;
+				block.m_currentOffset = 0u;
+				block.m_capacityInBytes = sizeInBytes;
+
+				m_currentOffset += sizeInBytes;
+
+				return block;
+			}
+
+			void LinearAllocator::Reset()
+			{
+				m_currentOffset = 0u;
+			}
+		} // namespace memory
+	} // namespace kit
+} // namespace ts

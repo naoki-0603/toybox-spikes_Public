@@ -1,0 +1,107 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details.
+
+// STL Libraries
+#include <vector>
+#include <array>
+#include <map>
+#include <unordered_map>
+#include <functional>
+#include <random>
+#include <queue>
+
+// Standard Libraries
+#include <string>
+#include <cstdint>
+#include <memory>
+#include <print>
+#include <filesystem>
+
+// ThreadLibrary
+#include <thread>
+#include <mutex>
+#include <latch>
+
+// Windows Libraries
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif //! WIN32_LEAN_AND_MEAN
+
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif //! NOMINMAX
+
+#include <Windows.h>
+
+// Math Libraries
+#include <cmath>
+#include <DirectXMath.h>
+
+namespace ts
+{
+	using i8 = std::int8_t;
+	using i16 = std::int16_t;
+	using i32 = std::int32_t;
+	using i64 = std::int64_t;
+
+	using u8 = std::uint8_t;
+	using u16 = std::uint16_t;
+	using u32 = std::uint32_t;
+	using u64 = std::uint64_t;
+
+	using f32 = float;
+	using f64 = double;
+
+	template <typename T>
+	using Ref = std::shared_ptr<T>;
+
+	template <typename T>
+	using Unique = std::unique_ptr<T>;
+} // namespace ts
+
+#include "Common/include/Core/Base.hpp"
+
+#include "Common/include/Core/Assert.hpp"
+#include "Common/include/Core/Memory/Memory.hpp"
+#include "Common/include/Core/Log.hpp"
+
+#include "Common/include/Helper/UnitConversion.hpp"
+#include "Common/include/Helper/StringHelper.hpp"
+
+#include "Common/include/Math/Math.hpp"
+#include "Common/include/Math/IVector.hpp"
+#include "Common/include/Math/Vector.hpp"
+#include "Common/include/Math/Matrix.hpp"
+#include "Common/include/Math/Quaternion.hpp"
+#include "Common/include/Math/Random.hpp"
+#include "Common/include/Math/UUID.hpp"
+
+#include "Common/include/Core/Handle.hpp"
+
+#include "Common/include/Core/Container/SlotMap.hpp"
+
+#include "Common/include/Core/Event/EventDispatcher.hpp"
+#include "Common/include/Core/FileSystem.hpp"
+
+namespace ts
+{
+	using IVector2 = kit::math::IVector2;
+	using Vector2 = kit::math::Vector2;
+	using Vector3 = kit::math::Vector3;
+	using Vector4 = kit::math::Vector4;
+	using Matrix = kit::math::Matrix;
+	using Quaternion = kit::math::Quaternion;
+
+	using UUID = kit::math::UUID;
+
+	template <class T, class HandleType>
+	using SlotMap = kit::container::SlotMap<T, HandleType>;
+}
+
+#include <imgui.h>
+
+#ifdef TRACY_ENABLE
+	#include <tracy/Tracy.hpp>
+#endif // TRACY_ENABLE

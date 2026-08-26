@@ -1,0 +1,66 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_CORE_MEMORY_MEMORY_HPP_
+#define SPIKES_KIT_COMMON_CORE_MEMORY_MEMORY_HPP_
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace memory
+		{
+			struct MemoryBlock final
+			{
+				u64 m_currentOffset{};
+				u64 m_capacityInBytes{};
+				u8* m_startAddress{};
+			};
+
+			[[nodiscard]]
+			inline u64 AlignUp(u64 size, u64 alignment)
+			{
+				TS_ASSERT(
+					alignment > 0u && (alignment & (alignment - 1)) == 0,
+					"アライメントは2の累乗でないといけません"
+				);
+
+				return (size + (alignment - 1)) & ~(alignment - 1);
+			}
+
+			[[nodiscard]] 
+			inline void* AlignUp(void* ptr, size_t alignment)
+			{
+				size_t address = reinterpret_cast<size_t>(ptr);
+				size_t alignedAddress = AlignUp(address, alignment);
+			
+				return reinterpret_cast<void*>(alignedAddress);
+			}
+
+		} // namespace memory
+	} // namespace kit
+} // namespace ts
+
+#define TS_SAFE_RELEASE(Ptr) \
+	do \
+	{ \
+		if (Ptr) \
+		{ \
+			delete Ptr; \
+			Ptr = nullptr; \
+		} \
+	} while (false)
+
+#define TS_SAFE_RELEASE_ARRAY(Array) \
+	do \
+	{ \
+		if (Array) \
+		{ \
+			delete[] Array; \
+			Array = nullptr; \
+		} \
+	} while (false)
+
+#endif //! SPIKES_KIT_COMMON_CORE_MEMORY_MEMORY_HPP_

@@ -1,0 +1,147 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RENDER_RESOURCE_MANAGER_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RENDER_RESOURCE_MANAGER_HPP_
+
+#include "Graphics/RHI/RHI_Types.hpp"
+#include "Graphics/RHI/RHI_Format.hpp"
+
+#include "RenderResourceDatabase.hpp"
+
+#include <shared_mutex>
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			class RHI_Device;
+
+			// ShaderBindingsLayout
+			struct RHI_ShaderBindingsLayoutDesc;
+
+			// PipelineState
+			struct RHI_PipelineStateDesc;
+
+			// Buffer
+			struct RHI_BufferDesc;
+
+			// Texture
+			struct RHI_TextureDesc;
+
+			// TextureView
+			struct RHI_TextureViewDesc;
+
+			// Sampler
+			struct RHI_SamplerState;
+		} // namespace graphics
+
+		namespace resource
+		{
+			struct RenderResourceManagerInitDesc final
+			{
+				graphics::RHI_Device* m_device{};
+			};
+
+			class RenderResourceManager final
+			{
+			public:
+				RenderResourceManager();
+				RenderResourceManager(const RenderResourceManager&) = delete;
+				RenderResourceManager(RenderResourceManager&&) noexcept = default;
+				~RenderResourceManager() noexcept = default;
+			public:
+				[[nodiscard]]
+				bool Create(const RenderResourceManagerInitDesc& desc);
+
+				[[nodiscard]]
+				bool Destroy();
+
+			public:
+				[[nodiscard]]
+				ShaderResourceHandle CreateShader(
+					graphics::RHI_ShaderType shaderType,
+					const std::vector<u8>& shaderCode
+				);
+
+				[[nodiscard]]
+				PipelineStateResourceHandle CreateOrGetPipelineState(
+					const graphics::RHI_PipelineStateDesc& desc
+				);
+
+				[[nodiscard]]
+				BufferResourceHandle CreateBuffer(
+					const graphics::RHI_BufferDesc& desc
+				);
+
+				[[nodiscard]]
+				ShaderBindingsLayoutResourceHandle CreateShaderBindingsLayout(
+					const graphics::RHI_ShaderBindingsLayoutDesc& desc
+				);
+
+				[[nodiscard]]
+				TextureResourceHandle CreateTexture(
+					const std::vector<u8>& pixels,
+					const IVector2& size,
+					u32 mipLevels,
+					graphics::RHI_Format format
+				);
+
+				[[nodiscard]]
+				TextureViewResourceHandle CreateTextureView(
+					const graphics::RHI_TextureViewDesc& desc
+				);
+
+				[[nodiscard]]
+				SamplerResourceHandle CreateOrGetSampler(
+					const graphics::RHI_SamplerState& state
+				);
+			public:
+				[[nodiscard]]
+				const graphics::RHI_Shader* FindShader(ShaderResourceHandle handle) const;
+
+				[[nodiscard]]
+				const graphics::RHI_PipelineState* FindPipelineState(PipelineStateResourceHandle handle) const;
+
+				[[nodiscard]]
+				const graphics::RHI_Buffer* FindBuffer(BufferResourceHandle handle) const;
+
+				[[nodiscard]]
+				graphics::RHI_Buffer* FindBuffer(BufferResourceHandle handle);
+
+				[[nodiscard]]
+				const graphics::RHI_ShaderBindingsLayout* FindShaderBindingsLayout(ShaderBindingsLayoutResourceHandle handle) const;
+
+				[[nodiscard]]
+				const graphics::RHI_Texture* FindTexture(TextureResourceHandle handle) const;
+
+				[[nodiscard]]
+				const graphics::RHI_TextureView* FindTextureDefaultView(TextureResourceHandle handle) const;
+
+				[[nodiscard]]
+				const graphics::RHI_TextureView* FindTextureView(TextureViewResourceHandle handle) const;
+
+				[[nodiscard]]
+				const graphics::RHI_Sampler* FindSampler(SamplerResourceHandle handle) const;
+			private:
+				RenderResourceDatabase m_database;
+
+				mutable std::shared_mutex m_createShaderMutex;
+				mutable std::shared_mutex m_createPipelineStateMutex;
+				mutable std::shared_mutex m_createBufferMutex;
+				mutable std::shared_mutex m_createShaderBindingsLayoutMutex;
+				mutable std::shared_mutex m_createTextureMutex;
+				mutable std::shared_mutex m_createTextureViewMutex;
+				mutable std::shared_mutex m_createSamplerMutex;
+
+				graphics::RHI_Device* m_device;
+			};
+		} // namespace resource
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RENDER_RESOURCE_MANAGER_HPP_

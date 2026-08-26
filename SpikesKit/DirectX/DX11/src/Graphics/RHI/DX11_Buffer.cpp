@@ -1,0 +1,169 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Graphics/RHI/DX11_Buffer.hpp"
+#include "Graphics/RHI/DX11_Device.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace dx11
+		{
+			namespace internal
+			{
+				D3D11_USAGE ToD3D11Usage(graphics::RHI_BufferUsage usage)
+				{
+					switch (usage)
+					{
+					case graphics::RHI_BufferUsage::Default: return D3D11_USAGE_DEFAULT;
+					case graphics::RHI_BufferUsage::Immutable: return D3D11_USAGE_IMMUTABLE;
+					case graphics::RHI_BufferUsage::Dynamic: return D3D11_USAGE_DYNAMIC;
+					case graphics::RHI_BufferUsage::Staging: return D3D11_USAGE_STAGING;
+					}
+
+					TS_FATAL_LOG("不明なBufferUsageです {}", static_cast<u32>(usage));
+
+					return static_cast<D3D11_USAGE>(-1);
+				}
+
+				D3D11_BIND_FLAG ToD3D11BindFlag(graphics::RHI_BufferType type)
+				{
+					switch (type)
+					{
+					case graphics::RHI_BufferType::VertexBuffer: return D3D11_BIND_VERTEX_BUFFER;
+					case graphics::RHI_BufferType::IndexBuffer: return D3D11_BIND_INDEX_BUFFER;
+					case graphics::RHI_BufferType::ConstantBuffer: return D3D11_BIND_CONSTANT_BUFFER;
+					}
+
+					TS_FATAL_LOG("不明なBufferTypeです {}", static_cast<u32>(type));
+
+					return static_cast<D3D11_BIND_FLAG>(-1);
+				}
+
+				D3D11_CPU_ACCESS_FLAG ToD3D11CPUAccessFlag(graphics::RHI_BufferUsage usage)
+				{
+					switch (usage)
+					{
+					case graphics::RHI_BufferUsage::Default: 
+					case graphics::RHI_BufferUsage::Immutable:
+						return static_cast<D3D11_CPU_ACCESS_FLAG>(0u);
+					case graphics::RHI_BufferUsage::Dynamic: return D3D11_CPU_ACCESS_WRITE;
+					case graphics::RHI_BufferUsage::Staging: return D3D11_CPU_ACCESS_READ;
+					}
+
+					TS_FATAL_LOG("不明なBufferUsageです {}", static_cast<u32>(usage));
+
+					return static_cast<D3D11_CPU_ACCESS_FLAG>(-1);
+				}
+			} // namespace internal
+
+			DX11_Buffer::DX11_Buffer(ID3D11DeviceContext* contextReference) :
+				RHI_Buffer(), m_buffer(), m_contextReference(contextReference)
+			{
+			}
+
+			bool DX11_Buffer::Create(
+				graphics::RHI_Device* device,
+				const graphics::RHI_BufferDesc& desc
+			)
+			{
+				const u64 totalSizeInBytes = desc.m_count * desc.m_strideInBytes;
+				m_data.resize(totalSizeInBytes);
+
+				// Comオブジェクトを作成
+				{
+					auto dx11Device = static_cast<DX11_Device*>(device);
+
+					D3D11_BUFFER_DESC dx11BufferDesc = {};
+					dx11BufferDesc.ByteWidth = totalSizeInBytes;
+					dx11BufferDesc.Usage = internal::ToD3D11Usage(desc.m_usage);
+					dx11BufferDesc.BindFlags = internal::ToD3D11BindFlag(desc.m_type);
+					dx11BufferDesc.StructureByteStride = desc.m_strideInBytes;
+					dx11BufferDesc.CPUAccessFlags = internal::ToD3D11CPUAccessFlag(desc.m_usage);
+					dx11BufferDesc.MiscFlags = 0u;
+
+					D3D11_SUBRESOURCE_DATA initialData = {};
+					initialData.pSysMem = desc.m_data ? desc.m_data : m_data.data();
+					initialData.SysMemPitch = totalSizeInBytes;
+					initialData.SysMemSlicePitch = 0u;
+
+					const HRESULT hr = dx11Device->GetNativeDevice()->CreateBuffer(
+						&dx11BufferDesc,
+						&initialData,
+						m_buffer.ReleaseAndGetAddressOf()
+					);
+					if (hr != S_OK)
+					{
+						TS_FATAL_LOG("バッファの作成に失敗しました。");
+
+						return false;
+					}
+				}
+
+				// メンバ変数に設定
+				{
+					if (desc.m_data)
+					{
+						std::memcpy(m_data.data(), desc.m_data, totalSizeInBytes);
+					}
+
+					m_count = desc.m_count;
+					m_strideInBytes = desc.m_strideInBytes;
+					m_usage = desc.m_usage;
+					m_type = desc.m_type;
+				}
+
+				return true;
+			}
+
+			bool DX11_Buffer::Destroy()
+			{
+				Release();
+
+				return true;
+			}
+
+			void DX11_Buffer::WriteData(
+				const void* data,
+				u64 sizeInBytes,
+				u64 offset
+			)
+			{
+				TS_ASSERT(m_usage == graphics::RHI_BufferUsage::Dynamic, "Dynamicバッファでなければいけません");
+				TS_ASSERT(data, "dataポインターがnullです");
+
+				D3D11_MAPPED_SUBRESOURCE subresource = {};
+				HRESULT hr = m_contextReference->Map(
+					m_buffer.Get(),
+					0u,
+					D3D11_MAP_WRITE_DISCARD,
+					0u,
+					&subresource
+				);
+				TS_ASSERT(hr == S_OK, "リソースのマップに失敗しました");
+
+				auto mappedPtr = static_cast<u8*>(subresource.pData);
+				std::memcpy(
+					mappedPtr + offset,
+					data,
+					sizeInBytes
+				);
+
+				m_contextReference->Unmap(
+					m_buffer.Get(),
+					0u
+				);
+			}
+
+			void DX11_Buffer::Release()
+			{
+				m_buffer.Reset();
+
+				delete this;
+			}
+		} // namespace dx11
+	} // namespace kit
+} // namespace ts

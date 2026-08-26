@@ -1,0 +1,35 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_COMMON_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_COMMON_HPP_
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			enum class RHI_GraphicsAPI : i32
+			{
+				DX11,
+				DX12,
+				Vulkan,
+
+				Max
+			};
+
+			extern RHI_GraphicsAPI g_graphicsAPI;
+
+			[[nodiscard]]
+			inline RHI_GraphicsAPI GetCurrentGraphicsAPI() noexcept
+			{
+				return g_graphicsAPI;
+			}
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_COMMON_HPP_

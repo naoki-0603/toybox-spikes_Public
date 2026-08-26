@@ -1,0 +1,45 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Graphics/RHI/DX11_CommandAllocator.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace dx11
+		{
+			DX11_CommandAllocator::DX11_CommandAllocator() :
+				graphics::RHI_CommandAllocator()
+			{
+			}
+
+			bool DX11_CommandAllocator::Create(
+				const graphics::RHI_Device* device,
+				graphics::CommandAllocatorType type
+			)
+			{
+				// 何もしない
+
+				(void)device;
+				(void)type;
+
+				return true;
+			}
+
+			bool DX11_CommandAllocator::Destroy()
+			{
+				Release();
+				
+				return true;
+			}
+
+			void DX11_CommandAllocator::Release()
+			{
+				delete this;
+			}
+		} // namespace dx11
+	} // namespace kit
+} // namespace ts

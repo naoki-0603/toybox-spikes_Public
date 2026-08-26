@@ -1,0 +1,95 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_TEXTURE_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_TEXTURE_HPP_
+
+#include "IRHI.hpp"
+#include "RHI_Format.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			class RHI_Device;
+
+			enum class RHI_TextureType : i32
+			{
+				Texture2D = 0,
+				Texture3D,
+				TextureCube,
+
+				Max
+			};
+
+			enum class RHI_TextureUsage : u32
+			{
+				None = 0u,
+				ShaderRead = (1 << 0), /// SRV
+				RenderTarget = (1 << 1), /// RTV
+				DepthStencil = (1 << 2), /// DSV
+
+				Max = 4
+			};
+			TS_DEFINE_ENUM_BIT_OPERATORS(RHI_TextureUsage)
+
+			struct RHI_TextureDesc final
+			{
+				std::vector<u8> m_pixels{};
+				IVector2 m_size{};
+				RHI_Format m_format{};
+				RHI_TextureUsage m_usage{};
+				RHI_TextureType m_type{};
+				u32 m_mipLevels{ 1u };
+			};
+
+			class RHI_Texture : public IRHI
+			{
+			public:
+				RHI_Texture();
+				RHI_Texture(const RHI_Texture&) = delete;
+				RHI_Texture(RHI_Texture&&) noexcept = default;
+				virtual ~RHI_Texture() noexcept override = default;
+
+				RHI_Texture& operator=(const RHI_Texture&) = delete;
+				RHI_Texture& operator=(RHI_Texture&&) noexcept = default;
+
+			public:
+				[[nodiscard]]
+				virtual bool Create(
+					RHI_Device* device,
+					const RHI_TextureDesc& desc
+				) = 0;
+			public:
+				[[nodiscard]]
+				RHI_TextureType GetType() const noexcept { return m_type; }
+
+				[[nodiscard]]
+				RHI_TextureUsage GetUsage() const noexcept { return m_usage; }
+
+				[[nodiscard]]
+				const IVector2& GetSize() const noexcept { return m_size; }
+
+				[[nodiscard]]
+				u32 GetMipLevels() const noexcept { return m_mipLevels; }
+
+				[[nodiscard]]
+				RHI_Format GetFormat() const noexcept { return m_format; }
+			protected:
+				RHI_TextureType m_type;
+				RHI_TextureUsage m_usage;
+
+				IVector2 m_size;
+				u32 m_mipLevels;
+
+				RHI_Format m_format;
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_TEXTURE_HPP_

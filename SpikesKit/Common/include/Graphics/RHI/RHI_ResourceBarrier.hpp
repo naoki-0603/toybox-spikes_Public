@@ -1,0 +1,69 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_RESOURCE_BARRIER_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_RESOURCE_BARRIER_HPP_
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			class RHI_Buffer;
+
+			enum class RHI_ResourceState : u32
+			{
+				Common = 0,
+				VertexAndConstantBuffer = (1 << 0),
+				IndexBuffer = (1 << 1),
+				RenderTarget = (1 << 2),
+				UnorderedAccess = (1 << 3),
+				DepthWrite = (1 << 4),
+				DepthRead = (1 << 5),
+				NonPixelShaderResource = (1 << 6),
+				PixelShaderResource = (1 << 7),
+				StreamOut = (1 << 8),
+				IndirectArgument = (1 << 9),
+				CopyDest = (1 << 10),
+				CopySrc = (1 << 11),
+				ResolveDest = (1 << 12),
+				ResolveSrc = (1 << 13),
+				RayTracingAccelerationStructure = (1 << 14),
+				GenericRead,
+				AllShaderResource = (NonPixelShaderResource | PixelShaderResource),
+				Present = 0,
+
+				Max = 19
+			};
+
+			enum class RHI_ResourceBarrierType : u32
+			{
+				Transition,
+				Aliasing,
+				UAV,
+
+				Max
+			};
+
+			struct RHI_ResourceTransitionBarrier final
+			{
+				RHI_Buffer* m_resource{};
+				u32 m_subresource{};
+
+				RHI_ResourceState m_beforeState{};
+				RHI_ResourceState m_afterState{};
+			};
+
+			struct RHI_ResourceBarrier final
+			{
+				RHI_ResourceBarrierType m_type{};
+				RHI_ResourceTransitionBarrier m_transitionBarrier{};
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_RESOURCE_BARRIER_HPP_

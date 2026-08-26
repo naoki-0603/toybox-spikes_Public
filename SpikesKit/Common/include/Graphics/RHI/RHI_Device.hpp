@@ -1,0 +1,110 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_DEVICE_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_DEVICE_HPP_
+
+#include "IRHI.hpp"
+
+#include "RHI_CommandQueue.hpp"
+#include "RHI_Texture.hpp"
+#include "RHI_TextureView.hpp"
+#include "RHI_ShaderBindingsLayout.hpp"
+#include "RHI_Buffer.hpp"
+#include "RHI_SwapChain.hpp"
+#include "RHI_PipelineState.hpp"
+#include "RHI_Sampler.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			class RHI_PhyisicalDevice;
+			class RHI_CommmandAllocator;
+
+			enum class DeviceOptions : i32
+			{
+				Default,
+				EnableDebug,
+
+				Max
+			};
+
+			class RHI_Device : public IRHI
+			{
+			public:
+				RHI_Device();
+				RHI_Device(const RHI_Device&) = delete;
+				RHI_Device(RHI_Device&&) noexcept = default;
+				virtual ~RHI_Device() noexcept override = default;
+
+				RHI_Device& operator=(const RHI_Device&) = delete;
+				RHI_Device& operator=(RHI_Device&&) noexcept = default;
+
+			public:
+				[[nodiscard]]
+				virtual bool Create(
+					RHI_PhyisicalDevice* phyisicalDevice,
+					DeviceOptions options
+				) = 0;
+
+			public:
+				[[nodiscard]]
+				virtual RHI_CommandQueue* CreateCommandQueue(
+					CommandQueueType type
+				) = 0;
+
+				[[nodiscard]]
+				virtual RHI_Texture* CreateTexture(
+					const RHI_TextureDesc& desc
+				) = 0;
+
+				[[nodiscard]]
+				virtual RHI_Shader* CreateShader(
+					const RHI_ShaderDesc& desc
+				) = 0;
+
+				[[nodiscard]]
+				virtual RHI_TextureView* CreateTextureView(
+					const RHI_TextureViewDesc& desc
+				) = 0;
+
+				[[nodiscard]]
+				virtual RHI_PipelineState* CreatePipelineState(
+					const RHI_PipelineStateDesc& desc
+				) = 0;
+
+				[[nodiscard]]
+				virtual RHI_ShaderBindingsLayout* CreateShaderBindingsLayout(
+					const RHI_ShaderBindingsLayoutDesc& desc
+				) = 0;
+
+				[[nodiscard]]
+				virtual RHI_Buffer* CreateBuffer(
+					const RHI_BufferDesc& desc
+				) = 0;
+
+				[[nodiscard]]
+				virtual RHI_SwapChain* CreateSwapChain(
+					const RHI_SwapChainDesc& desc
+				) = 0;
+
+				[[nodiscard]]
+				virtual RHI_Sampler* CreateSampler(
+					const RHI_SamplerState& state
+				) = 0;
+			public:
+				[[nodiscard]]
+				RHI_PhyisicalDevice* GetPhysicalDevice() const { return m_phyisicalDevice; }
+			protected:
+				RHI_PhyisicalDevice* m_phyisicalDevice;
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_DEVICE_HPP_

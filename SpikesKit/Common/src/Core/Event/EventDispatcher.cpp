@@ -1,0 +1,57 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Core/Event/EventDispatcher.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace event
+		{
+			EventDispatcher::EventDispatcher() :
+				m_listeners()
+			{
+			}
+
+			void EventDispatcher::RegisterListener(
+				void* self,
+				const Callback& callback,
+				EventPriority priority
+			)
+			{
+				EventListener listener = {};
+				listener.m_self = self;
+				listener.m_callback = callback;
+				listener.m_priority = priority;
+
+				m_listeners.push_back(std::move(listener));
+
+				std::sort(
+					m_listeners.begin(), m_listeners.end(),
+					[](const EventListener& lhs, const EventListener& rhs) -> bool
+					{
+						return (static_cast<u32>(lhs.m_priority) < static_cast<u32>(rhs.m_priority));
+					}
+				);
+			}
+
+			void EventDispatcher::Dispatch(const void* eventData) const
+			{
+				for (const auto& listener : m_listeners)
+				{
+					if (listener.m_callback)
+					{
+						listener.m_callback(listener.m_self, eventData);
+					}
+					else
+					{
+						TS_WARNING_LOG("コールバック関数が設定されていません。");
+					}
+				}
+			}
+		} // namespace event
+	} // namespace kit
+} // namespace ts

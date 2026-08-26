@@ -1,0 +1,51 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_COMMAND_ALLOCATOR_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_COMMAND_ALLOCATOR_HPP_
+
+#include "IRHI.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			class RHI_Device;
+
+			enum class CommandAllocatorType : i32
+			{
+				Graphics = 0,
+				Compute,
+
+				Max
+			};
+
+			class RHI_CommandAllocator : public IRHI
+			{
+			public:
+				RHI_CommandAllocator();
+				RHI_CommandAllocator(const RHI_CommandAllocator&) = delete;
+				RHI_CommandAllocator(RHI_CommandAllocator&&) noexcept = default;
+				virtual ~RHI_CommandAllocator() noexcept override = default;
+
+				RHI_CommandAllocator& operator=(const RHI_CommandAllocator&) = delete;
+				RHI_CommandAllocator& operator=(RHI_CommandAllocator&&) noexcept = default;
+			public:
+				[[nodiscard]]
+				virtual bool Create(
+					const RHI_Device* device,
+					CommandAllocatorType type
+				) = 0;
+			public:
+				[[nodiscard]]
+				virtual bool Reset() = 0;
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_COMMAND_ALLOCATOR_HPP_

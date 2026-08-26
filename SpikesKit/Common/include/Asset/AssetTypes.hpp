@@ -1,0 +1,36 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_ASSET_ASSET_TYPES_HPP_
+#define SPIKES_KIT_COMMON_ASSET_ASSET_TYPES_HPP_
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace asset
+		{
+			using AssetTimestamp = u64;
+
+			enum class AssetState : u32
+			{
+				Unloaded,
+				Loading, /// 読み込み中
+				Completed, /// 読み込み完了
+				Failed, /// 読み込み失敗
+
+				Max
+			};
+
+			struct AssetMetadata final
+			{
+				AssetTimestamp m_timestamp{};
+				AssetState m_state{ AssetState::Unloaded };
+			};
+		} // namespace asset
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_ASSET_ASSET_TYPES_HPP_

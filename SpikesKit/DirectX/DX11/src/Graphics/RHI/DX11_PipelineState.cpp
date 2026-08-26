@@ -1,0 +1,115 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Graphics/RHI/DX11_PipelineState.hpp"
+#include "Graphics/RHI/DX11_Device.hpp"
+#include "Graphics/RHI/DX11_Format.hpp"
+#include "Graphics/RHI/DX11_Shader.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace dx11
+		{
+			namespace internal
+			{
+				D3D11_PRIMITIVE_TOPOLOGY ToD3D11PrimitiveTopology(graphics::RHI_PrimitiveTopology primitiveTopology)
+				{
+					switch (primitiveTopology)
+					{
+						case graphics::RHI_PrimitiveTopology::PointList: return D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+						case graphics::RHI_PrimitiveTopology::LineList: return D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+						case graphics::RHI_PrimitiveTopology::TriangleList: return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+					}
+
+					TS_FATAL_LOG("不明なPrimitiveTopologyです");
+
+					return static_cast<D3D11_PRIMITIVE_TOPOLOGY>(-1);
+				}
+			} // namespace internal
+			
+			DX11_PipelineState::DX11_PipelineState(
+				ID3D11BlendState* blendState,
+				ID3D11RasterizerState* rasterizerState,
+				ID3D11DepthStencilState* depthStencilState
+			) : RHI_PipelineState(),
+				m_blendState(blendState),
+				m_rasterizerState(rasterizerState),
+				m_depthStencilState(depthStencilState)
+			{
+			}
+
+			bool DX11_PipelineState::Create(
+				graphics::RHI_Device* device,
+				const graphics::RHI_PipelineStateDesc& desc
+			)
+			{
+				auto dx11Device = static_cast<DX11_Device*>(device);
+				
+				if (!CreateInputLayout(dx11Device->GetNativeDevice(), desc.m_vertexShader, desc.m_vertexLayouts))
+				{
+					TS_FATAL_LOG("InputLayoutの作成に失敗しました");
+
+					return false;
+				}
+
+				m_vertexShader = desc.m_vertexShader;
+				m_pixelShader = desc.m_pixelShader;
+				m_primitiveTopology = desc.m_primitiyTopology;
+				m_vertexLayouts = desc.m_vertexLayouts;
+				m_shaderBindingsLayout = desc.m_shaderBindingsLayout;
+
+				return true;
+			}
+
+			bool DX11_PipelineState::Destroy()
+			{
+				Release();
+
+				return true;
+			}
+
+			bool DX11_PipelineState::CreateInputLayout(
+				ID3D11Device* device,
+				const graphics::RHI_Shader* vertexShader,
+				const std::vector<graphics::RHI_VertexLayout>& vertexLayouts
+			)
+			{
+				std::vector<D3D11_INPUT_ELEMENT_DESC> elementDesc(vertexLayouts.size());
+
+				const u32 elementNum = static_cast<u32>(elementDesc.size());
+				for (u32 i = 0u; i < elementNum; ++i)
+				{
+					elementDesc[i].SemanticName = vertexLayouts[i].m_semanticName;
+					elementDesc[i].SemanticIndex = vertexLayouts[i].m_semanticIndex;
+					elementDesc[i].InputSlot = vertexLayouts[i].m_inputSlot;
+					elementDesc[i].Format = ToDXGIFormat(vertexLayouts[i].m_format);
+					elementDesc[i].InstanceDataStepRate = D3D11_INPUT_PER_VERTEX_DATA;
+					elementDesc[i].AlignedByteOffset = (vertexLayouts[i].m_alignedByteOffset == 0xFFFFFFFF) ? 
+						D3D11_APPEND_ALIGNED_ELEMENT : 
+						vertexLayouts[i].m_alignedByteOffset;
+				}
+
+				const HRESULT hr = device->CreateInputLayout(
+					elementDesc.data(),
+					elementNum,
+					vertexShader->GetShaderBinary(),
+					vertexShader->GetShaderBinarySize(),
+					m_inputLayout.ReleaseAndGetAddressOf()
+				);
+
+				return (hr == S_OK);
+			}
+
+			void DX11_PipelineState::Release()
+			{
+				m_inputLayout.Reset();
+
+				delete this;
+			}
+		} // namespace dx11
+	} // namespace kit
+} // namespace ts

@@ -1,0 +1,26 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_VIEWPORT_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_VIEWPORT_HPP_
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			struct RHI_Viewport final
+			{
+				IVector2 m_topLeft{};
+				IVector2 m_size{};
+				f32 m_minDepth{};
+				f32 m_maxDepth{};
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_VIEWPORT_HPP_

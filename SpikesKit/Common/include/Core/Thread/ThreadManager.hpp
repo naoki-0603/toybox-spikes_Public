@@ -1,0 +1,62 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_CORE_THREAD_THREAD_MANAGER_HPP_
+#define SPIKES_KIT_COMMON_CORE_THREAD_THREAD_MANAGER_HPP_
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace thread
+		{
+			/// メインスレッドに1コア使用するため最大数 - 1
+			static const i32 k_maxThreads = static_cast<i32>(std::thread::hardware_concurrency() - 1);
+
+			using WorkerFunc = void (*)(void*);
+
+			enum class WorkerType : i32
+			{
+				Render = 0,
+				Common,
+
+				Max
+			};
+
+			class ThreadManager final
+			{
+			public:
+				ThreadManager();
+				ThreadManager(const ThreadManager&) = delete;
+				ThreadManager(ThreadManager&&) noexcept = default;
+				~ThreadManager() noexcept;
+
+				ThreadManager& operator=(const ThreadManager&) = delete;
+				ThreadManager& operator=(ThreadManager&&) noexcept = default;
+			public:
+				[[nodiscard]]
+				bool Create();
+
+				// EventEngineTerminateが発行
+				// RenderJobSystem/JobSystemが OnEngineTerminateを受信する
+				// 終了処理が終わった後にこのDestroy関数が呼び出される
+				[[nodiscard]]
+				bool Destroy();
+
+				[[nodiscard]]
+				bool RegisterWorkersFunc(WorkerFunc func, void* funcData, WorkerType type);
+			private:
+				std::vector<std::thread> m_workers;
+
+				u32 m_numRenderThreads;
+				u32 m_numCommonThreads;
+
+				u32 m_currentRegisterIndex;
+			};
+		} // namespace thread
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_CORE_THREAD_THREAD_MANAGER_HPP_

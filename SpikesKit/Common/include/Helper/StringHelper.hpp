@@ -1,0 +1,25 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_HELPER_STRING_HELPER_HPP_
+#define SPIKES_KIT_COMMON_HELPER_STRING_HELPER_HPP_
+
+namespace ts
+{
+	namespace kit
+	{
+		/**
+		 * @brief パラメータパックを全て展開した文字列を返す
+		 */
+		template <typename... Args>
+		[[nodiscard]]
+		inline std::string Printf(std::string_view format, const Args&... args)
+		{
+			return std::string(std::vformat(format, std::make_format_args(args...)));
+		}
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_HELPER_STRING_HELPER_HPP_

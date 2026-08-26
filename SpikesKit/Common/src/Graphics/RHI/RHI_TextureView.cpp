@@ -1,0 +1,39 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Graphics/RHI/RHI_TextureView.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			namespace internal
+			{
+				[[nodiscard]]
+				std::string ToString(RHI_TextureViewType type)
+				{
+					switch (type)
+					{
+					case RHI_TextureViewType::RenderTargetView: return "RenderTargetView";
+					case RHI_TextureViewType::DepthStencilView: return "DepthStencilView";
+					case RHI_TextureViewType::ShaderResourceView: return "ShaderResourceView";
+					case RHI_TextureViewType::UnorderedAccessView: return "UnorderedAccessView";
+					}
+
+					TS_FATAL_LOG("不明なテクスチャビューの種類です。");
+
+					return "";
+				}
+			} // namespace internal
+
+			RHI_TextureView::RHI_TextureView() :
+				m_texture(), m_type()
+			{
+			}
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts

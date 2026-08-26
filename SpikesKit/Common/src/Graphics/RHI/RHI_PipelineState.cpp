@@ -1,0 +1,87 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Graphics/RHI/RHI_PipelineState.hpp"
+
+#include "Core/Hash.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			RHI_PipelineState::RHI_PipelineState() :
+				m_vertexShader(), m_pixelShader(),
+				m_primitiveTopology(),
+				m_vertexLayouts()
+			{
+			}
+
+			u64 RHI_PipelineStateDesc::GetHash() const
+			{
+				u64 seed = 0u;
+
+				hash::HashCombine(seed, m_rtvFormat);
+				hash::HashCombine(seed, m_dsvFormat);
+				hash::HashCombine(seed, m_rasterizerState.m_fillMode);
+				hash::HashCombine(seed, m_rasterizerState.m_cullMode);
+				hash::HashCombine(seed, m_rasterizerState.m_frontCounterClockwise);
+				hash::HashCombine(seed, m_rasterizerState.m_depthBias);
+				hash::HashCombine(seed, m_rasterizerState.m_depthBiasClamp);
+				hash::HashCombine(seed, m_rasterizerState.m_slopeScaledDepthBias);
+				hash::HashCombine(seed, m_rasterizerState.m_depthClipEnable);
+				hash::HashCombine(seed, m_rasterizerState.m_scissorEnable);
+				hash::HashCombine(seed, m_rasterizerState.m_multisampleEnable);
+				hash::HashCombine(seed, m_rasterizerState.m_antialiasedLineEnable);
+				hash::HashCombine(seed, m_primitiyTopology);
+				hash::HashCombine(seed, m_blendState.m_alphaToCoverageEnable);
+				hash::HashCombine(seed, m_blendState.m_blendEnable);
+				hash::HashCombine(seed, m_blendState.m_srcBlend);
+				hash::HashCombine(seed, m_blendState.m_destBlend);
+				hash::HashCombine(seed, m_blendState.m_blendOp);
+				hash::HashCombine(seed, m_blendState.m_srcBlendAlpha);
+				hash::HashCombine(seed, m_blendState.m_destBlendAlpha);
+				hash::HashCombine(seed, m_blendState.m_blendOpAlpha);
+				hash::HashCombine(seed, m_blendState.m_renderTargetWriteMask);
+				hash::HashCombine(seed, m_depthStencilState.m_depthEnable);
+				hash::HashCombine(seed, m_depthStencilState.m_depthWriteMask);
+				hash::HashCombine(seed, m_depthStencilState.m_depthFunc);
+				hash::HashCombine(seed, m_depthStencilState.m_stencilEnable);
+				hash::HashCombine(seed, m_depthStencilState.m_stencilReadMask);
+				hash::HashCombine(seed, m_depthStencilState.m_stencilWriteMask);
+				hash::HashCombine(seed, m_depthStencilState.m_frontFace.m_stencilFailOp);
+				hash::HashCombine(seed, m_depthStencilState.m_frontFace.m_stencilDepthFailOp);
+				hash::HashCombine(seed, m_depthStencilState.m_frontFace.m_stencilPassOp);
+				hash::HashCombine(seed, m_depthStencilState.m_frontFace.m_stencilFunc);
+				hash::HashCombine(seed, m_depthStencilState.m_backFace.m_stencilFailOp);
+				hash::HashCombine(seed, m_depthStencilState.m_backFace.m_stencilDepthFailOp);
+				hash::HashCombine(seed, m_depthStencilState.m_backFace.m_stencilPassOp);
+				hash::HashCombine(seed, m_depthStencilState.m_backFace.m_stencilFunc);
+
+				TS_ASSERT(m_vertexShader, "VertexShaderがnullptrです");
+				hash::HashCombine(seed, m_vertexShader->GetType());
+				hash::HashCombine(seed, m_vertexShader->GetShaderBinarySize());
+				hash::HashCombine(seed, m_vertexShader->GetShaderBinary());
+
+				TS_ASSERT(m_pixelShader, "PixelShaderがnullptrです");
+				hash::HashCombine(seed, m_pixelShader->GetType());
+				hash::HashCombine(seed, m_pixelShader->GetShaderBinarySize());
+				hash::HashCombine(seed, m_pixelShader->GetShaderBinary());
+
+				for (u64 layoutIndex = 0u; layoutIndex < m_vertexLayouts.size(); ++layoutIndex)
+				{
+					hash::HashCombine(seed, m_vertexLayouts[layoutIndex].m_semanticName);
+					hash::HashCombine(seed, m_vertexLayouts[layoutIndex].m_semanticIndex);
+					hash::HashCombine(seed, m_vertexLayouts[layoutIndex].m_inputSlot);
+					hash::HashCombine(seed, m_vertexLayouts[layoutIndex].m_alignedByteOffset);
+					hash::HashCombine(seed, m_vertexLayouts[layoutIndex].m_format);
+				}
+
+				return seed;
+			}
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts

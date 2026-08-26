@@ -1,0 +1,51 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Graphics/Mesh.hpp"
+#include "Graphics/Material.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			Mesh::Mesh()/* :
+			m_subMeshes()*/
+			{
+			}
+
+			void Mesh::AddSubMesh(
+				const Ref<Material>& material,
+				const SubMesh& subMesh
+			)
+			{
+				// m_subMeshes[material->GetUUID()].emplace_back(subMesh);
+			}
+
+			StaticMesh::StaticMesh() :
+				Mesh()
+			{
+			}
+
+			void StaticMesh::OnUpdate()
+			{
+
+			}
+
+			void StaticMesh::OnRender()
+			{
+			}
+
+			void SkinnedMesh::OnUpdate()
+			{
+			}
+
+			void SkinnedMesh::OnRender()
+			{
+			}
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts

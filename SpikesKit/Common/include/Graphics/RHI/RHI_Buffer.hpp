@@ -1,0 +1,82 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_BUFFER_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_BUFFER_HPP_
+
+#include "IRHI.hpp"
+
+#include "RHI_Types.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			class RHI_Device;
+
+			struct RHI_BufferDesc final
+			{
+				u64 m_count{};
+				u64 m_strideInBytes{};
+				const void* m_data{};
+
+				RHI_BufferUsage m_usage{};
+				RHI_BufferType m_type{};
+			};
+
+
+			class RHI_Buffer : public IRHI
+			{
+			public:
+				RHI_Buffer();
+				RHI_Buffer(const RHI_Buffer&) = delete;
+				RHI_Buffer(RHI_Buffer&&) noexcept = default;
+				virtual ~RHI_Buffer() noexcept = default;
+
+				RHI_Buffer& operator=(const RHI_Buffer&) = delete;
+				RHI_Buffer& operator=(RHI_Buffer&&) noexcept = default;
+			public:
+				[[nodiscard]]
+				virtual bool Create(
+					RHI_Device* device,
+					const RHI_BufferDesc& desc
+				) = 0;
+
+			public:
+				virtual void WriteData(
+					const void* data,
+					u64 sizeInBytes,
+					u64 offset
+				) = 0;
+
+			public:
+				[[nodiscard]]
+				RHI_BufferUsage GetUsage() const noexcept { return m_usage; }
+				
+				[[nodiscard]]
+				RHI_BufferType GetType() const noexcept { return m_type; }
+
+				[[nodiscard]]
+				u64 GetCount() const noexcept { return m_count; }
+
+				[[nodiscard]]
+				u64 GetStride() const noexcept { return m_strideInBytes; }
+			protected:
+				RHI_BufferUsage m_usage;
+				RHI_BufferType m_type;
+
+				u64 m_count;
+				u64 m_strideInBytes;
+
+				std::vector<u8> m_data;
+				void* m_mappedPtr;
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_BUFFER_HPP_

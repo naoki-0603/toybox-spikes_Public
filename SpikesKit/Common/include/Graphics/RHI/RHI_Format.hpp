@@ -1,0 +1,91 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_FORMAT_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_FORMAT_HPP_
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			enum class RHI_Format : i32
+			{
+				Unknown = 0,
+				R32G32B32A32_Typeless,
+				R32G32B32A32_Float,
+				R32G32B32A32_UInt,
+				R32G32B32A32_Int,
+				R32G32B32_Typeless,
+				R32G32B32_Float,
+				R32G32B32_UInt,
+				R32G32B32_Int,
+				R16G16B16A16_Typeless,
+				R16G16B16A16_Float,
+				R16G16B16A16_UNorm,
+				R16G16B16A16_UInt,
+				R16G16B16A16_Norm,
+				R16G16B16A16_Int,
+				R32G32_Typeless,
+				R32G32_Float,
+				R32G32_UInt,
+				R32G32_Int,
+				R32G8X24_Typeless, /// Red 32bits, Green 8bits, Unused 24bits
+				D32_Float_S8X24_UInt, /// Depth 32bits, Stencil 8bits, Unused 24bits
+				R32_Float_X8X24_Typeless, /// Red 32bits, Unused 8bits, Unused2 24bits
+				X32_Typeless_G8X24_UInt, /// Unused 32bits, Green 8bits, Unused2 24bits
+				R10G10B10A2_Typeless,
+				R10G10B10A2_UNorm,
+				R10G10B10A2_UInt,
+				R11G11B10_Float,
+				R8G8B8A8_Typeless,
+				R8G8B8A8_UNorm,
+				R8G8B8A8_UNorm_SRGB, /// SRGB空間に自動で変換を行う
+				R8G8B8A8_UInt,
+				R8G8B8A8_Norm,
+				R8G8B8A8_INT,
+				R16G16_Typeless,
+				R16G16_Float,
+				R16G16_Unorm,
+				R16G16_UInt,
+				R16G16_Norm,
+				R16G16_Int,
+				R32_Typeless,
+				D32_Float,
+				R32_Float,
+				R32_UInt,
+				R32_Int,
+				R24G8_Typeless,
+				D24_UNorm_S8_UInt,
+				R24_UNorm_X8_Typeless,
+				X24_Typeless_G8_UInt,
+				R8G8_Typeless,
+				R8G8_UNorm,
+				R8G8_UInt,
+				R8G8_Norm,
+				R8G8_Int,
+				R16_Typeless,
+				R16_Float,
+				D16_UNorm,
+				R16_UNorm,
+				R16_UInt,
+				R16_Norm,
+				R16_Int,
+				R8_Typeless,
+				R8_UNorm,
+				R8_UInt,
+				R8_Norm,
+				R8_Int,
+				A8_UNorm,
+				R1_UNorm,
+
+				Max
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_FORMAT_HPP_

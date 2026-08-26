@@ -1,0 +1,36 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Graphics/RenderPass/RenderPass.hpp"
+
+#include "Graphics/RHI/RHI_Device.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			RenderPass::RenderPass() :
+				m_passIndex()
+			{
+			}
+
+			bool RenderPass::Create(
+				const RenderPassDesc& desc
+			)
+			{
+				m_passIndex = desc.m_passIndex;
+
+				return true;
+			}
+
+			bool RenderPass::Destroy()
+			{
+				return true;
+			}
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts

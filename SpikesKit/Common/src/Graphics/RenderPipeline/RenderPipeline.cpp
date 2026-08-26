@@ -1,0 +1,25 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Graphics/RenderPipeline/RenderPipeline.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			RenderPipeline::RenderPipeline() :
+				m_renderPasses()
+			{
+			}
+
+			void RenderPipeline::AddRenderPass(RenderPass* pass)
+			{
+				m_renderPasses.push_back(pass);
+			}
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts

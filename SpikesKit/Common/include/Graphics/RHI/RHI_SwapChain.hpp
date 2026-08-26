@@ -1,0 +1,90 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_SWAPCHAIN_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_SWAPCHAIN_HPP_
+
+#include "IRHI.hpp"
+
+#include "RHI_Format.hpp"
+#include "RHI_TextureView.hpp"
+#include "RHI_Viewport.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			class RHI_Device;
+			class RHI_Texture;
+
+			enum class RHI_SwapChainOptions : u32
+			{
+				Default = (1 << 0),
+				AllowTearing = (1 << 1),
+
+				Max = 2,
+			};
+			TS_DEFINE_ENUM_BIT_OPERATORS(RHI_SwapChainOptions)
+
+			struct RHI_SwapChainDesc final
+			{
+				IVector2 m_size{};
+				RHI_SwapChainOptions m_options{};
+				RHI_Format m_format{};
+				u32 m_bufferCount{};
+
+				void* m_windowHandle{};
+			};
+
+			class RHI_SwapChain : public IRHI
+			{
+			public:
+				RHI_SwapChain();
+				RHI_SwapChain(const RHI_SwapChain&) = delete;
+				RHI_SwapChain(RHI_SwapChain&&) noexcept = default;
+				virtual ~RHI_SwapChain() noexcept override = default;
+
+				RHI_SwapChain& operator=(const RHI_SwapChain&) = delete;
+				RHI_SwapChain& operator=(RHI_SwapChain&&) noexcept = default;
+
+			public:
+				[[nodiscard]]
+				virtual bool Create(
+					RHI_Device* device,
+					const RHI_SwapChainDesc& desc
+				) = 0;
+			public:
+				[[nodiscard]]
+				virtual bool Present() = 0;
+
+				[[nodiscard]]
+				virtual bool Resize(
+					const IVector2& size
+				) = 0;
+			public:
+				[[nodiscard]]
+				u32 GetBufferCount() const noexcept { return m_bufferCount; }
+
+				[[nodiscard]]
+				const RHI_Viewport& GetViewport() const noexcept { return m_viewport; }
+
+				[[nodiscard]]
+				virtual RHI_TextureView* GetCurrentRTV() const = 0;
+
+				[[nodiscard]]
+				virtual RHI_TextureView* GetCurrentDSV() const = 0;
+			protected:
+				u32 m_bufferCount;
+				RHI_SwapChainOptions m_options;
+
+				RHI_Viewport m_viewport;
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_SWAPCHAIN_HPP_

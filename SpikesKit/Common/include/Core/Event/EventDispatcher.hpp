@@ -1,0 +1,60 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_CORE_EVENT_EVENT_DISPATCHER_HPP_
+#define SPIKES_KIT_COMMON_CORE_EVENT_EVENT_DISPATCHER_HPP_
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace event
+		{
+			using EventPriority = u32;
+
+			class EventDispatcher final
+			{
+			public:
+				/// void Callback(void* self, const void* eventData)
+				using Callback = void(*)(void* self, const void* eventData);
+
+				struct EventListener final
+				{
+					void* m_self{};
+					EventPriority m_priority{};
+					Callback m_callback{};
+				};
+			public:
+				EventDispatcher();
+				EventDispatcher(const EventDispatcher&) = delete;
+				EventDispatcher(EventDispatcher&&) noexcept = default;
+				~EventDispatcher() noexcept = default;
+
+				EventDispatcher& operator=(const EventDispatcher&) = delete;
+				EventDispatcher& operator=(EventDispatcher&&) noexcept = default;
+			public:
+				void RegisterListener(void* self, const Callback& callback, EventPriority priority = 0u);
+
+				void Dispatch(const void* eventData) const;
+			private:
+				std::vector<EventListener> m_listeners;
+			};
+		} // namespace event
+	} // namespace kit
+} // namespace ts
+
+// Self: 呼び出したいメンバ関数の親
+// Class: 呼び出したいクラス名 (例: Renderer)
+// Method: 呼び出したいメンバ関数名 (例: OnResize)
+// EventTypeStruct: 受け取るイベント構造体の型 (例: WindowResizeEvent)
+#define TS_BIND_EVENT(Self, Class, Method, EventTypeStruct, EventPriority) \
+	Self, \
+	[](void* instance, const void* eventData) \
+	{ \
+        static_cast<Class*>(instance)->Method(static_cast<const EventTypeStruct*>(eventData)); \
+    }, \
+	EventPriority
+
+#endif //! SPIKES_KIT_COMMON_CORE_EVENT_EVENT_DISPATCHER_HPP_

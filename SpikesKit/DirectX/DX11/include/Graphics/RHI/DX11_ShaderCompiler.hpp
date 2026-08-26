@@ -1,0 +1,43 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_DX11_GRAPHICS_RHI_DX11_SHADER_COMPILER_HPP_
+#define SPIKES_KIT_DX11_GRAPHICS_RHI_DX11_SHADER_COMPILER_HPP_
+
+#include "Graphics/RHI/RHI_ShaderCompiler.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace dx11
+		{
+			class DX11_ShaderCompiler final : public graphics::RHI_ShaderCompiler
+			{
+			public:
+				DX11_ShaderCompiler();
+				DX11_ShaderCompiler(const DX11_ShaderCompiler&) = delete;
+				DX11_ShaderCompiler(DX11_ShaderCompiler&&) noexcept = default;
+				~DX11_ShaderCompiler() noexcept = default;
+
+				DX11_ShaderCompiler& operator=(const DX11_ShaderCompiler&) = delete;
+				DX11_ShaderCompiler& operator=(DX11_ShaderCompiler&&) noexcept = default;
+			public:
+				[[nodiscard]]
+				bool Destroy() override;
+
+			public:
+				[[nodiscard]]
+				std::vector<u8> Compile(
+					const graphics::RHI_ShaderCompilerConfig& config
+				) override;
+			private:
+				void Release() override;
+			};
+		} // namespace dx11
+	} // namespace kit
+} // namespace ts 
+
+#endif //! SPIKES_KIT_DX11_GRAPHICS_RHI_DX11_SHADER_COMPILER_HPP_

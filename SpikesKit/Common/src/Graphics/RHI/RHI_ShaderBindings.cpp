@@ -1,0 +1,85 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Graphics/RHI/RHI_ShaderBindings.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			RHI_ShaderBindings::RHI_ShaderBindings() :
+				m_shaderBindingsState()
+			{
+			}
+
+			void RHI_ShaderBindings::SetConstantBuffer(
+				u32 slot,
+				const RHI_Buffer* buffer,
+				RHI_ShaderBindingsVisibility visibility
+			)
+			{
+				TS_ASSERT(
+					slot < k_maxCBVSlots,
+					"スロット数が定数バッファ最大スロット数よりも超過しています。"
+				);
+
+				const bool bindVS = (visibility & RHI_ShaderBindingsVisibility::VertexShader) == RHI_ShaderBindingsVisibility::VertexShader;
+				const bool bindPS = (visibility & RHI_ShaderBindingsVisibility::PixelShader) == RHI_ShaderBindingsVisibility::PixelShader;
+
+				if (bindVS)
+				{
+					 TS_ASSERT(
+					 	m_shaderBindingsState.m_vsConstantBuffers.m_buffers[slot] == nullptr,
+					 	"VS {}番目は既にバインドされています。", slot
+					 );
+
+					m_shaderBindingsState.m_vsConstantBuffers.m_minSlot = std::min(m_shaderBindingsState.m_vsConstantBuffers.m_minSlot, slot);
+					m_shaderBindingsState.m_vsConstantBuffers.m_maxSlot = std::max(m_shaderBindingsState.m_vsConstantBuffers.m_maxSlot, slot);
+					m_shaderBindingsState.m_vsConstantBuffers.m_buffers[slot] = buffer;
+				}
+
+				if (bindPS)
+				{
+					 TS_ASSERT(
+					 	m_shaderBindingsState.m_psConstantBuffers.m_buffers[slot] == nullptr,
+					 	"PS {}番目は既にバインドされています。", slot
+					 );
+
+					m_shaderBindingsState.m_psConstantBuffers.m_minSlot = std::min(m_shaderBindingsState.m_psConstantBuffers.m_minSlot, slot);
+					m_shaderBindingsState.m_psConstantBuffers.m_maxSlot = std::max(m_shaderBindingsState.m_psConstantBuffers.m_maxSlot, slot);
+					m_shaderBindingsState.m_psConstantBuffers.m_buffers[slot] = buffer;
+				}
+			}
+
+			void RHI_ShaderBindings::SetTextureView(
+				u32 slot,
+				const RHI_TextureView* view,
+				RHI_ShaderBindingsVisibility visibility
+			)
+			{
+				TS_ASSERT(
+					slot < k_maxSRVSlots,
+					"スロット数がテクスチャビュー最大スロット数よりも超過しています。"
+				);
+
+				const bool bindPS = (visibility & RHI_ShaderBindingsVisibility::PixelShader) == RHI_ShaderBindingsVisibility::PixelShader;
+
+				if (bindPS)
+				{
+					 TS_ASSERT(
+					 	m_shaderBindingsState.m_psTextureViews.m_views[slot] == nullptr,
+					 	"PS {}番目は既にバインドされています。", slot
+					 );
+
+					m_shaderBindingsState.m_psTextureViews.m_minSlot = std::min(m_shaderBindingsState.m_psTextureViews.m_minSlot, slot);
+					m_shaderBindingsState.m_psTextureViews.m_maxSlot = std::max(m_shaderBindingsState.m_psTextureViews.m_maxSlot, slot);
+					m_shaderBindingsState.m_psTextureViews.m_views[slot] = view;
+				}
+			}
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts 

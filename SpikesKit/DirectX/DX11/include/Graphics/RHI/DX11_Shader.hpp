@@ -1,0 +1,57 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_DX11_GRAPHICS_DX11_SHADER_HPP_
+#define SPIKES_KIT_DX11_GRAPHICS_DX11_SHADER_HPP_
+
+#include "Graphics/RHI/RHI_Shader.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace dx11
+		{
+			class DX11_Shader final : public graphics::RHI_Shader
+			{
+			public:
+				DX11_Shader();
+				DX11_Shader(const DX11_Shader&) = delete;
+				DX11_Shader(DX11_Shader&&) noexcept = default;
+				~DX11_Shader() noexcept override = default;
+
+				DX11_Shader& operator=(const DX11_Shader&) = delete;
+				DX11_Shader& operator=(DX11_Shader&&) noexcept = default;
+			public:
+				[[nodiscard]]
+				bool Create(
+					graphics::RHI_Device* device,
+					const graphics::RHI_ShaderDesc& desc
+				) override;
+
+				[[nodiscard]]
+				bool Destroy() override;
+			public:
+				[[nodiscard]]
+				ID3D11VertexShader* GetVertexShader() const { return m_vertexShader.Get(); }
+
+				[[nodiscard]]
+				ID3D11PixelShader* GetPixelShader() const { return m_pixelShader.Get(); }
+
+				[[nodiscard]]
+				ID3D11ComputeShader* GetComputeShader() const { return m_computeShader.Get(); }
+			private:
+				void Release() override;
+
+			private:
+				ComPtr<ID3D11VertexShader> m_vertexShader;
+				ComPtr<ID3D11PixelShader> m_pixelShader;
+				ComPtr<ID3D11ComputeShader> m_computeShader;
+			};
+		} // namespace dx11
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_DX11_GRAPHICS_DX11_SHADER_HPP_

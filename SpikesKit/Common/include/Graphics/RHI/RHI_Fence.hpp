@@ -1,0 +1,45 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_FENCE_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_FENCE_HPP_
+
+#include "IRHI.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			class RHI_Device;
+
+			class RHI_Fence : public IRHI
+			{
+			public:
+				RHI_Fence();
+				RHI_Fence(const RHI_Fence&) = delete;
+				RHI_Fence(RHI_Fence&&) noexcept = default;
+				virtual ~RHI_Fence() noexcept override = default;
+
+				RHI_Fence& operator=(const RHI_Fence&) = delete;
+				RHI_Fence& operator=(RHI_Fence&&) noexcept = default;
+			public:
+				[[nodiscard]]
+				virtual bool Create(RHI_Device* device) = 0;
+
+			public:
+				[[nodiscard]]
+				virtual u64 GetCompletedValue() const = 0;
+
+				virtual void Wait(u64 value) = 0;
+			protected:
+				u64 m_fenceValue;
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_FENCE_HPP_

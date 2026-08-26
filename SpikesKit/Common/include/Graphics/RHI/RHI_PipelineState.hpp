@@ -1,0 +1,87 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_PIPELINE_STATE_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_PIPELINE_STATE_HPP_
+
+#include "IRHI.hpp"
+#include "RHI_States.hpp"
+#include "RHI_VertexLayout.hpp"
+#include "RHI_Shader.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			class RHI_Device;
+			class RHI_ShaderBindingsLayout;
+
+			struct RHI_PipelineStateDesc final
+			{
+				[[nodiscard]]
+				u64 GetHash() const;
+			public:
+				RHI_Format m_rtvFormat{};
+				RHI_Format m_dsvFormat{};
+				RHI_RasterizerState m_rasterizerState{};
+				RHI_PrimitiveTopology m_primitiyTopology{};
+				RHI_BlendState m_blendState{};
+				RHI_DepthStencilState m_depthStencilState{};
+				const RHI_Shader* m_vertexShader{};
+				const RHI_Shader* m_pixelShader{};
+				const RHI_ShaderBindingsLayout* m_shaderBindingsLayout{};
+
+				std::vector<RHI_VertexLayout> m_vertexLayouts{};
+			};
+
+			class RHI_PipelineState : public IRHI
+			{
+			public:
+				RHI_PipelineState();
+				RHI_PipelineState(const RHI_PipelineState&) = delete;
+				RHI_PipelineState(RHI_PipelineState&&) noexcept = default;
+				virtual ~RHI_PipelineState() noexcept override = default;
+
+				RHI_PipelineState& operator=(const RHI_PipelineState&) = delete;
+				RHI_PipelineState& operator=(RHI_PipelineState&&) noexcept = default;
+			public:
+				[[nodiscard]]
+				virtual bool Create(
+					RHI_Device* device,
+					const RHI_PipelineStateDesc& desc
+				) = 0;
+
+			public:
+				[[nodiscard]]
+				const RHI_Shader* GetVertexShader() const noexcept { return m_vertexShader; }
+
+				[[nodiscard]]
+				const RHI_Shader* GetPixelShader() const noexcept { return m_pixelShader; }
+
+				[[nodiscard]]
+				const RHI_ShaderBindingsLayout* GetShaderBindingsLayout() const noexcept { return m_shaderBindingsLayout; }
+
+				[[nodiscard]]
+				RHI_PrimitiveTopology GetPrimitiveTopology() const noexcept { return m_primitiveTopology; }
+
+
+				[[nodiscard]]
+				const std::vector<RHI_VertexLayout>& GetVertexLayouts() const noexcept { return m_vertexLayouts; }
+			protected:
+				const RHI_Shader* m_vertexShader; /// 参照なのでDestroy関数ではRelease関数を呼ばない
+				const RHI_Shader* m_pixelShader; /// 参照なのでDestroy関数ではRelease関数を呼ばない
+				const RHI_ShaderBindingsLayout* m_shaderBindingsLayout; /// 参照なのでDestroy関数ではRelease関数を呼ばない
+
+				RHI_PrimitiveTopology m_primitiveTopology;
+
+				std::vector<RHI_VertexLayout> m_vertexLayouts;
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RHI_RHI_PIPELINE_STATE_HPP_

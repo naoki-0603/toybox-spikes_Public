@@ -1,0 +1,22 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#include "Graphics/RHI/RHI_Buffer.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace graphics
+		{
+			RHI_Buffer::RHI_Buffer() :
+				m_usage(), m_type(),
+				m_count(), m_strideInBytes(),
+				m_data(), m_mappedPtr()
+			{
+			}
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts

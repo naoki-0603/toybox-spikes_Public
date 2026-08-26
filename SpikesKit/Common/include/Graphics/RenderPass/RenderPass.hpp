@@ -1,0 +1,71 @@
+// SPDX - License - Identifier: MIT
+// Copyright(c) 2024 - 2026 naoki
+// Licensed under the MIT License.See the LICENSE file in the project root,
+// or visit https://opensource.org/licenses/MIT for details
+
+#ifndef SPIKES_KIT_COMMON_GRAPHICS_RENDER_PASS_RENDER_PASS_HPP_
+#define SPIKES_KIT_COMMON_GRAPHICS_RENDER_PASS_RENDER_PASS_HPP_
+
+#include "Graphics/RenderContext.hpp"
+
+#include "Graphics/RenderPacket.hpp"
+
+namespace ts
+{
+	namespace kit
+	{
+		namespace thread
+		{
+			class RenderJobSystem;
+		} // namespace thread
+
+		namespace graphics
+		{
+			class RHI_Device;
+
+			class RenderCommandRecorder;
+			class RenderResourceRecorder;
+
+			struct RenderPassDesc final
+			{
+				u64 m_passIndex{};
+			};
+
+			class RenderPass
+			{
+			public:
+				RenderPass();
+				RenderPass(const RenderPass&) = delete;
+				RenderPass(RenderPass&&) noexcept = default;
+				virtual ~RenderPass() noexcept = default;
+
+				RenderPass& operator=(const RenderPass&) = delete;
+				RenderPass& operator=(RenderPass&&) noexcept = default;
+			public:
+				[[nodiscard]]
+				virtual bool Create(
+					const RenderPassDesc& desc
+				);
+
+				[[nodiscard]]
+				virtual bool Destroy();
+			public:
+				virtual void DispatchJobs(
+					const RenderContext& context,
+					thread::RenderJobSystem& renderJobSystem,
+					RenderCommandRecorder** commandRecorders,
+					RenderResourceRecorder** resourceRecorders,
+					const RenderPacketsBundle& bundle,
+					std::latch* passLatch
+				) = 0;
+
+				[[nodiscard]]
+				virtual u32 GetJobCount() const noexcept = 0;
+			protected:
+				u64 m_passIndex;
+			};
+		} // namespace graphics
+	} // namespace kit
+} // namespace ts
+
+#endif //! SPIKES_KIT_COMMON_GRAPHICS_RENDER_PASS_RENDER_PASS_HPP_
