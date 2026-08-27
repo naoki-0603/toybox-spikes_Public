@@ -13,19 +13,12 @@ namespace ts
 		{
 			path GetRootDirectory()
 			{
-				const path projectName = "toybox_spikes";
-
-				// 現在実行しているプログラムのフルパスを取得する
-				char currentExeFullPathCStr[MAX_PATH] = {};
-				GetModuleFileNameA(nullptr, currentExeFullPathCStr, MAX_PATH);
-
-				const std::string currentExeFullPathStr = currentExeFullPathCStr;
-				const std::string projectRootPathStr = currentExeFullPathStr.substr(
-					0,
-					currentExeFullPathStr.find(projectName.string())
-				);
-
-				return path(projectRootPathStr) / projectName;
+#ifdef TS_PROJECT_ROOT
+				return path(TS_PROJECT_ROOT);
+#else // TS_PROJECT_ROOT
+#error "TS_PROJECT_ROOT is not defined in CMakeLists.txt!"
+				return path("");
+#endif //! TS_PROJECT_ROOT
 			}
 
 			path GetExecutableDirectory()
