@@ -137,6 +137,18 @@ namespace ts
 			}
 		}
 
+		{
+			m_terminateEventDispatcher.RegisterListener(
+				TS_BIND_EVENT(
+					m_jobSystem,
+					kit::thread::JobSystem,
+					OnEngineTerminate,
+					kit::event::EventEngineTerminate,
+					0u
+				)
+			);
+		}
+
 		if (!LoadResources())
 		{
 			TS_FATAL_LOG("リソースの読み込みに失敗しました。");

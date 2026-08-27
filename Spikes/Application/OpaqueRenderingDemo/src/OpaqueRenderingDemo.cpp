@@ -130,6 +130,18 @@ namespace ts
 			}
 		}
 
+		{
+			m_terminateEventDispatcher.RegisterListener(
+				TS_BIND_EVENT(
+					&m_jobSystem,
+					kit::thread::JobSystem,
+					OnEngineTerminate,
+					kit::event::EventEngineTerminate,
+					0u
+				)
+			);
+		}
+
 		LoadResources();
 		CreateRenderPasses();
 		CreateRenderPackets();
