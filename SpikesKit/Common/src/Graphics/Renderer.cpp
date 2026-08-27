@@ -351,7 +351,7 @@ namespace ts
 
 			void Renderer::OnWindowResize(const event::EventWindowResize* data)
 			{
-				(void)data;
+				m_swapChain->Resize(data->m_size);
 			}
 
 			bool Renderer::CreateRHIObjects(const RendererInitDesc& desc)

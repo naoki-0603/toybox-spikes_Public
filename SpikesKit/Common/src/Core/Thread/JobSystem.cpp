@@ -107,7 +107,7 @@ namespace ts
 				return handle;
 			}
 
-			void JobSystem::OnEngineTerminate()
+			void JobSystem::OnEngineTerminate(const event::EventEngineTerminate* data)
 			{
 				m_isRunning = false;
 

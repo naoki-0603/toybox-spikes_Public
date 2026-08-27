@@ -12,6 +12,11 @@ namespace ts
 {
 	namespace kit
 	{
+		namespace event
+		{
+			struct EventEngineTerminate;
+		} // namespace event
+
 		namespace thread
 		{
 			using JobHandle = u32;
@@ -74,7 +79,7 @@ namespace ts
 				);
 
 			public:
-				void OnEngineTerminate();
+				void OnEngineTerminate(const event::EventEngineTerminate* data);
 			
 				/// ワーカー用
 				void Work();

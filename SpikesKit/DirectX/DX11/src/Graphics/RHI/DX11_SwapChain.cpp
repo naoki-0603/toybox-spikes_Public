@@ -32,7 +32,7 @@ namespace ts
 			} // namespace internal
 
 			DX11_SwapChain::DX11_SwapChain() : RHI_SwapChain(),
-				m_swapChain(),
+				m_device(), m_swapChain(),
 				m_colorTexture(), m_depthStencilTexture(),
 				m_colorTextureView(), m_depthStencilTextureView()
 			{
@@ -44,6 +44,7 @@ namespace ts
 			)
 			{
 				TS_ASSERT(desc.m_windowHandle, "WindowHandleがnullです");
+
 
 				auto dx11Device = static_cast<DX11_Device*>(device);
 				auto phyisicalDevice = static_cast<DX11_PhyisicalDevice*>(device->GetPhysicalDevice());
@@ -151,6 +152,7 @@ namespace ts
 				}
 
 				m_options = desc.m_options;
+				m_device = dx11Device;
 
 				return true;
 			}
@@ -179,6 +181,37 @@ namespace ts
 			
 			bool DX11_SwapChain::Resize(const IVector2& size)
 			{
+				// 既存のテクスチャ/ビューを破棄する
+				{
+					if (!m_colorTexture->Destroy())
+					{
+						TS_FATAL_LOG("ColorTextureの破棄に失敗しました。");
+
+						return false;
+					}
+
+					if (!m_depthStencilTexture->Destroy())
+					{
+						TS_FATAL_LOG("DepthStencilTextureの破棄に失敗しました。");
+
+						return false;
+					}
+
+					if (!m_colorTextureView->Destroy())
+					{
+						TS_FATAL_LOG("ColorTextureViewの破棄に失敗しました。");
+
+						return false;
+					}
+
+					if (!m_depthStencilTextureView->Destroy())
+					{
+						TS_FATAL_LOG("DepthStencilTextureViewの破棄に失敗しました。");
+
+						return false;
+					}
+				}
+
 				// バッファのリサイズ
 				HRESULT hr = m_swapChain->ResizeBuffers(
 					0,
@@ -196,7 +229,7 @@ namespace ts
 				}
 
 				// バックバッファを取得する
-				ComPtr<ID3D11Texture2D> rtvBuffer;
+				ComPtr<ID3D11Resource> rtvBuffer;
 				hr = m_swapChain->GetBuffer(0, IID_PPV_ARGS(rtvBuffer.ReleaseAndGetAddressOf()));
 				if (hr != S_OK)
 				{
@@ -204,8 +237,59 @@ namespace ts
 
 					return false;
 				}
-				// TODO(naoki): リサイズ後のバッファで各種テクスチャとビューの作り直す処理の追加
 
+				// 新たに生成
+				{
+					// RTV
+					{
+						m_colorTexture = new DX11_Texture(rtvBuffer);
+
+						graphics::RHI_TextureViewDesc viewDesc = {};
+						viewDesc.m_texture = m_colorTexture;
+						viewDesc.m_type = graphics::RHI_TextureViewType::RenderTargetView;
+
+						m_colorTextureView = static_cast<DX11_TextureView*>(m_device->CreateTextureView(viewDesc));
+						if (!m_colorTextureView)
+						{
+							TS_FATAL_LOG("ColorTextureViewの作成に失敗しました。");
+
+							return false;
+						}
+					}
+
+					// DSV
+					{
+						graphics::RHI_TextureDesc textureDesc = {};
+						textureDesc.m_format = graphics::RHI_Format::D24_UNorm_S8_UInt;
+						textureDesc.m_size = size;
+						textureDesc.m_mipLevels = 1u;
+						textureDesc.m_type = graphics::RHI_TextureType::Texture2D;
+						textureDesc.m_usage = graphics::RHI_TextureUsage::DepthStencil;
+
+						m_depthStencilTexture = static_cast<DX11_Texture*>(m_device->CreateTexture(textureDesc));
+						if (!m_depthStencilTexture)
+						{
+							TS_FATAL_LOG("DepthStencilTextureの作成に失敗しました。");
+
+							return false;
+						}
+
+						graphics::RHI_TextureViewDesc textureViewDesc = {};
+						textureViewDesc.m_texture = m_depthStencilTexture;
+						textureViewDesc.m_type = graphics::RHI_TextureViewType::DepthStencilView;
+
+						m_depthStencilTextureView = static_cast<DX11_TextureView*>(m_device->CreateTextureView(textureViewDesc));
+						if (!m_depthStencilTextureView)
+						{
+							TS_FATAL_LOG("DepthStencilTextureViewの作成に失敗しました。");
+
+							return false;
+						}
+					}
+				}
+
+				m_viewport.m_size = size;
+				
 				return true;
 			}
 

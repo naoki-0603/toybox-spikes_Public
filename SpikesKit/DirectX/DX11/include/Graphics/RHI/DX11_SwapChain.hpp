@@ -15,6 +15,7 @@ namespace ts
 	{
 		namespace dx11
 		{
+			class DX11_Device;
 			class DX11_Texture;
 			class DX11_TextureView;
 
@@ -61,6 +62,8 @@ namespace ts
 				void Release() override;
 
 			private:
+				DX11_Device* m_device;
+				
 				ComPtr<IDXGISwapChain1> m_swapChain;
 
 				DX11_Texture* m_colorTexture;

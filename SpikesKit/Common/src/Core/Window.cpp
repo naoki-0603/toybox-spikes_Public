@@ -146,7 +146,9 @@ namespace ts
 			while (PeekMessage(&msg, nullptr, 0u, 0u, PM_REMOVE))
 			{
 				if (msg.message == WM_QUIT)
+				{
 					return false;
+				}
 
 				TranslateMessage(&msg);
 
@@ -158,10 +160,7 @@ namespace ts
 
 		bool Window::Destroy()
 		{
-			if (::DestroyWindow(m_handle) == 0)
-			{
-				return false;
-			}
+			::DestroyWindow(m_handle);
 
 			return true;
 		}
