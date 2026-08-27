@@ -26,6 +26,10 @@ function(setup_compile_definitions)
         $<$<CONFIG:Release>:TS_RELEASE>
         $<$<CONFIG:Dist>:TS_DIST>
     )
+
+    add_compile_definitions(
+        TS_PROJECT_ROOT="${PROJECT_SOURCE_DIR}"
+    )
 endfunction()
 
 function(setup_third_party_libraries)
