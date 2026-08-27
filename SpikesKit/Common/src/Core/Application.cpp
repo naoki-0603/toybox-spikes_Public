@@ -6,6 +6,7 @@
 #include "Core/Application.hpp"
 #include "Core/Thread/ThreadManager.hpp"
 #include "Core/Event/CoreEvent.hpp"
+#include "Core/Event/WindowEvent.hpp"
 
 #include "Graphics/CameraController.hpp"
 
@@ -86,11 +87,11 @@ namespace ts
 			return !(m_window.PollEvents());
 		}
 
-		void Application::OnWindowResize(const IVector2& size)
+		void Application::OnWindowResize(const kit::event::EventWindowResize* data)
 		{
 			if (m_camera)
 			{
-				m_camera->OnWindowResize(size);
+				m_camera->OnWindowResize(data->m_size);
 			}
 		}
 
@@ -131,6 +132,18 @@ namespace ts
 
 				m_camera->SetController(
 					std::make_shared<graphics::EditorCameraController>()
+				);
+			}
+
+			{
+				m_window.GetResizeEventDispatcher()->RegisterListener(
+					TS_BIND_EVENT(
+						this,
+						kit::Application,
+						OnWindowResize,
+						kit::event::EventWindowResize,
+						0
+					)
 				);
 			}
 

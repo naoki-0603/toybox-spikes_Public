@@ -18,6 +18,11 @@ namespace ts
 {
 	namespace kit
 	{
+		namespace event
+		{
+			struct EventWindowResize;
+		} // namespace event
+
 		/**
 		 * @brief アプリケーションの基底クラス
 		 * @details 
@@ -41,7 +46,7 @@ namespace ts
 
 			virtual bool ShouldClose() const noexcept;
 		protected:
-			virtual void OnWindowResize(const IVector2& size);
+			virtual void OnWindowResize(const kit::event::EventWindowResize* data);
 			virtual void OnWindowMouseScrolled(f32 wheelSpeed);
 
 		protected:
