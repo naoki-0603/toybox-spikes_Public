@@ -20,6 +20,11 @@ RHI (Rendering Hardware Interface) の抽象化検証にとどまらず、以下
     *   アルファテスト (Mask) / Zライト制御 (Depth Write Zero) を伴う半透明 (Alpha Blending) 描画の実証デモ。
     (※半透明の厳密なZソート機構は今後の拡張ロードマップとして定義)
 
+### 🎮 動作確認用コントロール (Controls)
+ビルド実行後、シーン内を自由に移動してご確認いただけます。
+* **カメラ移動:** W A S D
+* **視点操作:** 右クリック を押しながらマウス移動 (Free Camera)
+
 ## 🏛️ Core Architecture & Design Philosophy
 
 ### 1. RenderJobSystem: Lock-Free Command Building
