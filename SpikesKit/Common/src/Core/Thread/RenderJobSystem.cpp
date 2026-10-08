@@ -67,11 +67,11 @@ namespace ts
 			bool RenderJobSystem::TryPop(RenderJob& job)
 			{
 				// popIndexがpushIndexに追いついたら空っぽ
-				const u32 pushIndex = m_pushIndex.load(std::memory_order_relaxed);
+				const u32 pushIndex = m_pushIndex.load(std::memory_order_acquire);
 
 				while (true)
 				{
-					u32 popIndex = m_popIndex.load(std::memory_order_acquire);
+					u32 popIndex = m_popIndex.load(std::memory_order_relaxed);
 
 					// 仕事なし
 					if (popIndex >= pushIndex)
