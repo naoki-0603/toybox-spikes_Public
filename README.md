@@ -41,35 +41,24 @@ RHI (Rendering Hardware Interface) の抽象化検証にとどまらず、以下
 ## 🏛️ Core Architecture & Design Philosophy
 
 ### 1. RenderJobSystem: Lock-Free Command Building
-
 ※汎用的なスレッドプールではなく、「描画コマンドの並列構築」に特化・隔離させたロックフリー基盤です。重い `std::mutex` などの OS ロックを描画ループから完全に排除し、CPU のハードウェア命令（`std::atomic`）を直接制御することで、コマンド構築フェーズの限界スループットを実現しています。
 
 * **SPMC Ring Buffer:** `compare_exchange_weak` (CAS操作) とビット論理積 (`& 511`) を駆使した、ロックフリーなジョブキュー。
-
 * **CPU-CPU Synchronization:** C++20 `std::latch` によるアトミック・ダウンカウンター方式を採用。メインスレッド側の同期待機オーバーヘッドを削減。
+* **Data-Oriented Command Building:** Renderer層で描画リクエストを純粋なデータ（`RenderCommand`）へ変換。毎フレームリセットされる `FrameAllocator` から各ワーカースレッドがバッファをロックフリーで切り出し、連続メモリへ直接書き込む設計により、動的アロケーションを完全に排除。
 
-### 2. Data-Oriented Design (DOD) & Memory Management
-
-動的アロケーション（ヒープ確保）によるキャッシュ破壊とスレッド渋滞を防ぐため、徹底したデータ駆動設計を適用しています。
-
-* **Dual Bump Allocator:** 毎フレームリセットされる 32MB の連続メモリ（Frame Allocator）から、各ワーカースレッドが 64KB のブロックをロックフリーで切り出すリニア・アロケータ設計。
-
-* **Zero-Cost Abstraction:** ファントム型（`TypedHandle<T>`）と `SlotMap` を組み合わせることで、実行時の VTable オーバーヘッドを完全に排除しつつ、O(1) の高速なアセットアクセスと型安全性を両立。
-
-### 3. RHI Abstraction
-
+### 2. RHI Abstraction
 API に依存しないフロントエンド（コマンド構築層）と、DX11 API を直接制御するバックエンドを完全に分離しています。
 
 * **PSO Emulation:** DX11 上でありながら、DX12 の Root Signature や PipelineStateObject (PSO) に準拠した設計をエミュレーション。
-
 * **Safe ABI Boundary:** DLL 境界を越える際、異なるCランタイム（CRT）間のヒープ破損（Heap Corruption）リスクを回避するため、内部 `Release()` (`delete this;`) を用いた確実な寿命管理を実施。
 
-### 4. Asynchronous Asset Pipeline
+### 3. Asynchronous Asset Pipeline
+メインスレッドをブロックしない堅牢な非同期ロードパイプラインと、型安全なリソース管理基盤です。
 
 * **Stateless glTF 2.0 Importer:** インポーターから状態変数を排除したステートレス設計（純粋関数化）により、複数スレッドからの同時アクセス（デコード）を安全に実行。
-
 * **Minimized Critical Sections:** ファイル I/O とコンパイルをスレッドローカルで実行し、最後の SlotMap 登録時のみ Read-Write Lock を使用することで、メインスレッドのブロッキングを最小化。
-
+* **Zero-Cost Abstraction:** ファントム型（`TypedHandle<T>`）と `SlotMap` を組み合わせることで、実行時の VTable オーバーヘッドを完全に排除しつつ、O(1) の高速なアセットアクセスと型安全性を両立。
 ## 🛠️ Build Instructions
 
 本プロジェクトは Windows 環境および Visual Studio 向けに最適化された CMake ビルドシステムを構築しています。開発者の環境構築負荷（I/O）を最小化するため、自動セットアップ用のバッチスクリプトを用意しています。
