@@ -57,27 +57,27 @@ namespace ts
 								sampler.m_minFilter = MeshImporterResult::Sampler::MinFilter::Nearest;
 							}
 							// LINEAR
-							else if (gltfSampler.m_magFilter == 9729)
+							else if (gltfSampler.m_minFilter == 9729)
 							{
 								sampler.m_minFilter = MeshImporterResult::Sampler::MinFilter::Linear;
 							}
 							// NEAREST_MIPMAP_NEAREST
-							else if (gltfSampler.m_magFilter == 9984)
+							else if (gltfSampler.m_minFilter == 9984)
 							{
 								sampler.m_minFilter = MeshImporterResult::Sampler::MinFilter::NearestMipMapNearest;
 							}
 							// LINEAR_MIPMAP_NEAREST
-							else if (gltfSampler.m_magFilter == 9985)
+							else if (gltfSampler.m_minFilter == 9985)
 							{
 								sampler.m_minFilter = MeshImporterResult::Sampler::MinFilter::LinearMipMapNearest;
 							}
 							// NEAREST_MIPMAP_LINEAR
-							else if (gltfSampler.m_magFilter == 9986)
+							else if (gltfSampler.m_minFilter == 9986)
 							{
 								sampler.m_minFilter = MeshImporterResult::Sampler::MinFilter::NearestMipMapLinear;
 							}
 							// LINEAR_MIPMAP_LINEAR
-							else if (gltfSampler.m_magFilter == 9987)
+							else if (gltfSampler.m_minFilter == 9987)
 							{
 								sampler.m_minFilter = MeshImporterResult::Sampler::MinFilter::LinearMipMapLinear;
 							}

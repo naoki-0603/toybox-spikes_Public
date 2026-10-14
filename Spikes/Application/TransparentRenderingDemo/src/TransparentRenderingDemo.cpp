@@ -179,6 +179,14 @@ namespace ts
 		TS_SAFE_RELEASE(m_defaultAssetsBuilder);
 		TS_SAFE_RELEASE(m_jobSystem);
 
+		if (!m_assetManager->Destroy())
+		{
+			TS_FATAL_LOG("AssetManagerの破棄に失敗しました。");
+
+			return false;
+		}
+		TS_SAFE_RELEASE(m_assetManager);
+
 		if (!m_renderer->Destroy())
 		{
 			TS_FATAL_LOG("Rendererの破棄に失敗しました。");
