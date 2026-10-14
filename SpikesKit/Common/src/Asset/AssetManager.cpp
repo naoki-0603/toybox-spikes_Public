@@ -505,8 +505,11 @@ namespace ts
 
 							std::string convertedName = mesh.m_name;
 							convertedName += "_" + std::to_string(subMeshIndex);
-							
-							std::memcpy(subMeshAsset.m_name, convertedName.data(), convertedName.length() + 1u);
+
+							TS_ASSERT(convertedName.length() < sizeof(subMeshAsset.m_name), "サブメッシュ名が長すぎます。");
+							const u64 copyLength = std::min<u64>(convertedName.length(), sizeof(subMeshAsset.m_name) - 1u);
+							std::memcpy(subMeshAsset.m_name, convertedName.data(), copyLength);
+							subMeshAsset.m_name[copyLength] = '\0';
 
 							std::vector<StaticMeshVertex> vertices = {};
 							vertices.resize(subMesh.m_positions.size());

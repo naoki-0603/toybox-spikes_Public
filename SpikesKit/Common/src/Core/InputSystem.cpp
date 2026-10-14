@@ -101,7 +101,7 @@ namespace ts
 				return false;
 			}
 
-			return (~(m_keyboardPreviousData[mappedKey]) & (m_keyboardCurrentData[mappedKey]));
+			return (!(m_keyboardPreviousData[mappedKey] & 0x80u) && (m_keyboardCurrentData[mappedKey] & 0x80u));
 		}
 
 		bool InputSystem::IsKeyReleased(Key key) const
@@ -182,10 +182,10 @@ namespace ts
 				case Key::KeyF10: return VK_F10;
 				case Key::KeyF11: return VK_F11;
 				case Key::KeyF12: return VK_F12;
-				case Key::KeyLShift: return VK_F12;
-				case Key::KeyRShift: return VK_F12;
-				case Key::KeyLControl: return VK_F12;
-				case Key::KeyRControl: return VK_F12;
+				case Key::KeyLShift: return VK_LSHIFT;
+				case Key::KeyRShift: return VK_RSHIFT;
+				case Key::KeyLControl: return VK_LCONTROL;
+				case Key::KeyRControl: return VK_RCONTROL;
 			}
 
 			TS_ASSERT(false, "不明なキータイプです。");
