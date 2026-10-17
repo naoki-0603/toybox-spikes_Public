@@ -56,7 +56,7 @@ API に依存しないフロントエンド（コマンド構築層）と、DX11
 ### 3. Asynchronous Asset Pipeline
 メインスレッドをブロックしない堅牢な非同期ロードパイプラインと、型安全なリソース管理基盤です。
 
-* **Stateless glTF 2.0 Importer:** インポーターから状態変数を排除したステートレス設計（純粋関数化）により、複数スレッドからの同時アクセス（デコード）を安全に実行。
+* **Stateless Asset Importers (Texture / glTF 2.0)** インポーターから状態変数を排除したステートレス設計（純粋関数化）により、複数スレッドからの同時アクセス（デコード）を安全に実行。
 * **Minimized Critical Sections:** ファイル I/O とコンパイルをスレッドローカルで実行し、最後の SlotMap 登録時のみ Read-Write Lock を使用することで、メインスレッドのブロッキングを最小化。
 * **Zero-Cost Abstraction:** ファントム型（`TypedHandle<T>`）と `SlotMap` を組み合わせることで、実行時の VTable オーバーヘッドを完全に排除しつつ、O(1) の高速なアセットアクセスと型安全性を両立。
 ## 🛠️ Build Instructions
