@@ -56,7 +56,7 @@ namespace ts
 				{
 					m_mousePan.x = k_maxPan * (isMinusX ? -1.0f : 1.0f);
 				}
-				
+
 				// Y座標
 				bool isMinusY = (m_mousePan.y < 0.0f);
 				if (std::fabsf(m_mousePan.y) > k_maxPan)
@@ -101,7 +101,7 @@ namespace ts
 				return false;
 			}
 
-			return (~(m_keyboardPreviousData[mappedKey]) & (m_keyboardCurrentData[mappedKey]));
+			return (!(m_keyboardPreviousData[mappedKey] & 0x80u) && (m_keyboardCurrentData[mappedKey] & 0x80u));
 		}
 
 		bool InputSystem::IsKeyReleased(Key key) const
@@ -119,73 +119,73 @@ namespace ts
 		{
 			switch (key)
 			{
-				case Key::MouseLeft: return VK_LBUTTON;
-				case Key::MouseMiddle: return VK_MBUTTON;
-				case Key::MouseRight: return VK_RBUTTON;
-				case Key::MouseXButton1: return VK_XBUTTON1;
-				case Key::MouseXButton2: return VK_XBUTTON2;
-				case Key::KeyBackspace: return VK_BACK;
-				case Key::KeyTab: return VK_TAB;
-				case Key::KeyClear: return VK_CLEAR;
-				case Key::KeyReturn: return VK_RETURN;
-				case Key::KeyEscape: return VK_ESCAPE;
-				case Key::KeySpace: return VK_SPACE;
-				case Key::KeyLeft: return VK_LEFT;
-				case Key::KeyUp: return VK_UP;
-				case Key::KeyRight: return VK_RIGHT;
-				case Key::KeyDown: return VK_DOWN;
-				case Key::Key0: return '0';
-				case Key::Key1: return '1';
-				case Key::Key2: return '2';
-				case Key::Key3: return '3';
-				case Key::Key4: return '4';
-				case Key::Key5: return '5';
-				case Key::Key6: return '6';
-				case Key::Key7: return '7';
-				case Key::Key8: return '8';
-				case Key::Key9: return '9';
-				case Key::KeyA: return 'A';
-				case Key::KeyB: return 'B';
-				case Key::KeyC: return 'C';
-				case Key::KeyD: return 'D';
-				case Key::KeyE: return 'E';
-				case Key::KeyF: return 'F';
-				case Key::KeyG: return 'G';
-				case Key::KeyH: return 'H';
-				case Key::KeyI: return 'I';
-				case Key::KeyJ: return 'J';
-				case Key::KeyK: return 'K';
-				case Key::KeyL: return 'L';
-				case Key::KeyM: return 'M';
-				case Key::KeyN: return 'N';
-				case Key::KeyO: return 'O';
-				case Key::KeyP: return 'P';
-				case Key::KeyQ: return 'Q';
-				case Key::KeyR: return 'R';
-				case Key::KeyS: return 'S';
-				case Key::KeyT: return 'T';
-				case Key::KeyU: return 'U';
-				case Key::KeyV: return 'V';
-				case Key::KeyW: return 'W';
-				case Key::KeyX: return 'X';
-				case Key::KeyY: return 'Y';
-				case Key::KeyZ: return 'Z';
-				case Key::KeyF1: return VK_F1;
-				case Key::KeyF2: return VK_F2;
-				case Key::KeyF3: return VK_F3;
-				case Key::KeyF4: return VK_F4;
-				case Key::KeyF5: return VK_F5;
-				case Key::KeyF6: return VK_F6;
-				case Key::KeyF7: return VK_F7;
-				case Key::KeyF8: return VK_F8;
-				case Key::KeyF9: return VK_F9;
-				case Key::KeyF10: return VK_F10;
-				case Key::KeyF11: return VK_F11;
-				case Key::KeyF12: return VK_F12;
-				case Key::KeyLShift: return VK_F12;
-				case Key::KeyRShift: return VK_F12;
-				case Key::KeyLControl: return VK_F12;
-				case Key::KeyRControl: return VK_F12;
+			case Key::MouseLeft: return VK_LBUTTON;
+			case Key::MouseMiddle: return VK_MBUTTON;
+			case Key::MouseRight: return VK_RBUTTON;
+			case Key::MouseXButton1: return VK_XBUTTON1;
+			case Key::MouseXButton2: return VK_XBUTTON2;
+			case Key::KeyBackspace: return VK_BACK;
+			case Key::KeyTab: return VK_TAB;
+			case Key::KeyClear: return VK_CLEAR;
+			case Key::KeyReturn: return VK_RETURN;
+			case Key::KeyEscape: return VK_ESCAPE;
+			case Key::KeySpace: return VK_SPACE;
+			case Key::KeyLeft: return VK_LEFT;
+			case Key::KeyUp: return VK_UP;
+			case Key::KeyRight: return VK_RIGHT;
+			case Key::KeyDown: return VK_DOWN;
+			case Key::Key0: return '0';
+			case Key::Key1: return '1';
+			case Key::Key2: return '2';
+			case Key::Key3: return '3';
+			case Key::Key4: return '4';
+			case Key::Key5: return '5';
+			case Key::Key6: return '6';
+			case Key::Key7: return '7';
+			case Key::Key8: return '8';
+			case Key::Key9: return '9';
+			case Key::KeyA: return 'A';
+			case Key::KeyB: return 'B';
+			case Key::KeyC: return 'C';
+			case Key::KeyD: return 'D';
+			case Key::KeyE: return 'E';
+			case Key::KeyF: return 'F';
+			case Key::KeyG: return 'G';
+			case Key::KeyH: return 'H';
+			case Key::KeyI: return 'I';
+			case Key::KeyJ: return 'J';
+			case Key::KeyK: return 'K';
+			case Key::KeyL: return 'L';
+			case Key::KeyM: return 'M';
+			case Key::KeyN: return 'N';
+			case Key::KeyO: return 'O';
+			case Key::KeyP: return 'P';
+			case Key::KeyQ: return 'Q';
+			case Key::KeyR: return 'R';
+			case Key::KeyS: return 'S';
+			case Key::KeyT: return 'T';
+			case Key::KeyU: return 'U';
+			case Key::KeyV: return 'V';
+			case Key::KeyW: return 'W';
+			case Key::KeyX: return 'X';
+			case Key::KeyY: return 'Y';
+			case Key::KeyZ: return 'Z';
+			case Key::KeyF1: return VK_F1;
+			case Key::KeyF2: return VK_F2;
+			case Key::KeyF3: return VK_F3;
+			case Key::KeyF4: return VK_F4;
+			case Key::KeyF5: return VK_F5;
+			case Key::KeyF6: return VK_F6;
+			case Key::KeyF7: return VK_F7;
+			case Key::KeyF8: return VK_F8;
+			case Key::KeyF9: return VK_F9;
+			case Key::KeyF10: return VK_F10;
+			case Key::KeyF11: return VK_F11;
+			case Key::KeyF12: return VK_F12;
+			case Key::KeyLShift: return VK_LSHIFT;
+			case Key::KeyRShift: return VK_RSHIFT;
+			case Key::KeyLControl: return VK_LCONTROL;
+			case Key::KeyRControl: return VK_RCONTROL;
 			}
 
 			TS_ASSERT(false, "不明なキータイプです。");

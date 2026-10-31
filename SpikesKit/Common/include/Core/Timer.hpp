@@ -21,7 +21,7 @@ namespace ts
 			void End();
 
 		public:
-			[[noidiscard]]
+			[[nodiscard]]
 			f32 GetDeltaTime() const noexcept { return m_deltaTime; }
 
 			[[nodiscard]]

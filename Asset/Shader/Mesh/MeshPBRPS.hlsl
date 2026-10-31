@@ -46,14 +46,14 @@ float4 main(MeshVertexOut output) : SV_TARGET
     // }
 
     // Lighting
-    float3 normal = normalize(output.m_normal.xyz);
-    float3 directionalLightDirection = normalize(g_directionalLightDirection);
-    float NDotL = dot(normal, directionalLightDirection);
-    float halfLambert = NDotL * 0.5f + 0.5f;
-    halfLambert = halfLambert * halfLambert;
-
-    float3 lighting = finalColor.rgb * g_directionalLightColor.rgb * halfLambert;
-    finalColor = float4(lighting.rgb, finalColor.w);
+    // float3 normal = normalize(output.m_normal.xyz);
+    // float3 directionalLightDirection = normalize(g_directionalLightDirection);
+    // float NDotL = dot(normal, directionalLightDirection);
+    // float halfLambert = NDotL * 0.5f + 0.5f;
+    // halfLambert = halfLambert * halfLambert;
+// 
+    // float3 lighting = finalColor.rgb * g_directionalLightColor.rgb * halfLambert;
+    // finalColor = float4(lighting.rgb, finalColor.w);
     
     return finalColor;
 }

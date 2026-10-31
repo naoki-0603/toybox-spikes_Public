@@ -126,25 +126,40 @@ namespace ts
 		}
 
 		{
-			const ShaderAsset* staticMeshVertexShader = m_assetManager->FindShader(
+			const kit::asset::ShaderAsset* staticMeshVertexShader = m_assetManager->FindShader(
 				m_defaultAssetBuilder->GetStaticMeshVertexShaderHandle()
 			);
-			const ShaderAsset* meshPBRPixelShader = m_assetManager->FindShader(
+
+			const kit::asset::ShaderAsset* meshPBRPixelShader = m_assetManager->FindShader(
 				m_defaultAssetBuilder->GetMeshPBRPixelShaderHandle()
 			);
-			const ShaderAsset* meshPBRWithMashPixelShader = m_assetManager->FindShader(
+
+			const kit::asset::ShaderAsset* meshPBRWithMaskPixelShader = m_assetManager->FindShader(
 				m_defaultAssetBuilder->GetMeshPBRWithMaskPixelShaderHandle()
 			);
 
-			kit::graphics::DefaultRenderResourcesBuilderDesc builderDesc = {};
-			builderDesc.m_renderResourceManager = m_renderer->GetRenderResourceManager();
-			builderDesc.m_staticMeshVertexShaderHandle = staticMeshVertexShader->m_resourceHandle;
-			builderDesc.m_meshPBRPixelShaderHandle = meshPBRPixelShader->m_resourceHandle;
-			builderDesc.m_meshPBRWithMaskPixelShaderHandle = meshPBRWithMashPixelShader->m_resourceHandle;
+			const kit::asset::ShaderAsset* debugLineVertexShader = m_assetManager->FindShader(
+				m_defaultAssetBuilder->GetDebugLineVertexShaderHandle()
+			);
+
+			const kit::asset::ShaderAsset* debugLinePixelShader = m_assetManager->FindShader(
+				m_defaultAssetBuilder->GetDebugLinePixelShaderHandle()
+			);
 
 			m_defaultRenderResourcesBuilder = new kit::graphics::DefaultRenderResourcesBuilder;
-			if (!m_defaultRenderResourcesBuilder->Build(builderDesc))
+
+			kit::graphics::DefaultRenderResourcesBuilderDesc desc = {};
+			desc.m_renderResourceManager = m_renderer->GetRenderResourceManager();
+			desc.m_staticMeshVertexShaderHandle = staticMeshVertexShader->m_resourceHandle;
+			desc.m_meshPBRPixelShaderHandle = meshPBRPixelShader->m_resourceHandle;
+			desc.m_meshPBRWithMaskPixelShaderHandle = meshPBRWithMaskPixelShader->m_resourceHandle;
+			desc.m_debugLineVertexShaderHandle = debugLineVertexShader->m_resourceHandle;
+			desc.m_debugLinePixelShaderHandle = debugLinePixelShader->m_resourceHandle;
+
+			if (!m_defaultRenderResourcesBuilder->Build(desc))
 			{
+				TS_FATAL_LOG("デフォルトレンダーリソースの作成に失敗しました。");
+
 				return false;
 			}
 		}

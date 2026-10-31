@@ -22,7 +22,7 @@ namespace ts
 	} // namespace kit
 } // namespace ts
 
-#ifdef TS_DEBUG || TS_RELEASE
+#if defined(TS_DEBUG) || defined(TS_RELEASE)
 #define TS_ASSERT(Expression, FormattedText, ...) \
 	do \
 	{ \
@@ -32,7 +32,7 @@ namespace ts
 			ts::kit::internal::Assert(location.file_name(), location.line(), ts::kit::Printf(FormattedText,  __VA_ARGS__)); \
 		}\
 	} while (false)
-#else // TS_DEBUG || TS_RELEASE
+#else // defined(TS_DEBUG) || defined(TS_RELEASE)
 #define TS_ASSERT(Expression, FormattedText, ...)
 #endif // !(TS_DEBUG || TS_RELEASE)
 #endif //! SPIKES_KIT_COMMON_CORE_ASSERT_HPP_

@@ -121,6 +121,14 @@ namespace ts
 				m_defaultAssetsBuilder->GetMeshPBRWithMaskPixelShaderHandle()
 			);
 
+			const kit::asset::ShaderAsset* debugLineVertexShader = m_assetManager->FindShader(
+				m_defaultAssetsBuilder->GetDebugLineVertexShaderHandle()
+			);
+
+			const kit::asset::ShaderAsset* debugLinePixelShader = m_assetManager->FindShader(
+				m_defaultAssetsBuilder->GetDebugLinePixelShaderHandle()
+			);
+
 			m_defaultRenderResourceBuilder = new kit::graphics::DefaultRenderResourcesBuilder;
 
 			kit::graphics::DefaultRenderResourcesBuilderDesc desc = {};
@@ -128,6 +136,8 @@ namespace ts
 			desc.m_staticMeshVertexShaderHandle = staticMeshVertexShader->m_resourceHandle;
 			desc.m_meshPBRPixelShaderHandle = meshPBRPixelShader->m_resourceHandle;
 			desc.m_meshPBRWithMaskPixelShaderHandle = meshPBRWithMaskPixelShader->m_resourceHandle;
+			desc.m_debugLineVertexShaderHandle = debugLineVertexShader->m_resourceHandle;
+			desc.m_debugLinePixelShaderHandle = debugLinePixelShader->m_resourceHandle;
 
 			if (!m_defaultRenderResourceBuilder->Build(desc))
 			{
@@ -178,6 +188,16 @@ namespace ts
 		TS_SAFE_RELEASE(m_defaultRenderResourceBuilder);
 		TS_SAFE_RELEASE(m_defaultAssetsBuilder);
 		TS_SAFE_RELEASE(m_jobSystem);
+
+		if (m_assetManager)
+		{
+			if (!m_assetManager->Destroy())
+			{
+				TS_FATAL_LOG("AssetManagerの破棄に失敗しました。");
+				return false;
+			}
+			TS_SAFE_RELEASE(m_assetManager);
+		}
 
 		if (!m_renderer->Destroy())
 		{

@@ -178,25 +178,35 @@ namespace ts
 
 	bool DebugRendererDemo::OnFinalize()
 	{
+		TS_SAFE_RELEASE(m_defaultRenderResourceBuilder);
+		TS_SAFE_RELEASE(m_defaultAssetsBuilder);
 		TS_SAFE_RELEASE(m_jobSystem);
+
+		if (m_assetManager)
+		{
+			if (!m_assetManager->Destroy())
+			{
+				TS_FATAL_LOG("AssetManagerの破棄に失敗しました。");
+				return false;
+			}
+			TS_SAFE_RELEASE(m_assetManager);
+		}
+
+		// Rendererより先にDebugRendererを破棄する
+		if (!m_debugRenderer->Destroy())
+		{
+			TS_FATAL_LOG("DebugRendererの破棄に失敗しました。");
+			return false;
+		}
+		TS_SAFE_RELEASE(m_debugRenderer);
 
 		if (!m_renderer->Destroy())
 		{
 			TS_FATAL_LOG("Rendererの破棄に失敗しました。");
-
 			return false;
 		}
-
-		if (!m_debugRenderer->Destroy())
-		{
-			TS_FATAL_LOG("DebugRendererの破棄に失敗しました。");
-
-			return false;
-		}
-
-		TS_SAFE_RELEASE(m_debugRenderer);
 		TS_SAFE_RELEASE(m_renderer);
-		
+
 		return true;
 	}
 

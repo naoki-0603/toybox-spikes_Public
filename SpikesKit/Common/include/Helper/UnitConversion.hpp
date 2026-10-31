@@ -20,7 +20,7 @@ namespace ts
 		[[nodiscard]]
 		u64 ToMB(u64 sizeInKeroBytes) noexcept;
 
-		[[nodiscarrd]]
+		[[nodiscard]]
 		u64 ToGB(u64 sizeInMegaBytes) noexcept;
 	} // namespace kit
 } // namespace ts
