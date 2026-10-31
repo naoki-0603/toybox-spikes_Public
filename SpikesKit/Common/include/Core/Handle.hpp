@@ -50,7 +50,13 @@ namespace ts
 		{
 			TypedHandle() = default;
 			explicit TypedHandle(u64 id) : Handle(id) {}
-			TypedHandle(const Handle& baseHandle) : Handle(baseHandle) {}
+			explicit TypedHandle(const Handle& baseHandle) : Handle(baseHandle) {}
+
+			[[nodiscard]]
+			static TypedHandle<T> Create(u32 generation, u32 index) noexcept
+			{
+				return TypedHandle<T>(Handle::Create(generation, index));
+			}
 		};
 
 		// GPU用リソースハンドル

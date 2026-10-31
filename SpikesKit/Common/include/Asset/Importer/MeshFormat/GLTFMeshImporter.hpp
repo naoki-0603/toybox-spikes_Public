@@ -54,6 +54,7 @@ namespace ts
 
 						std::vector<Vector3> m_positions{};
 						std::vector<Vector3> m_normals{};
+						std::vector<Vector4> m_tangents{};
 						std::vector<Vector2> m_texcoords0{};
 						std::vector<Vector2> m_texcoords1{};
 						

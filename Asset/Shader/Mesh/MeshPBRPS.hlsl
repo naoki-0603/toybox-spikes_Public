@@ -6,7 +6,10 @@
 #include "Mesh.hlsli"
 #include "PBRMaterial.hlsli"
 
+#include "../SceneConstants.hlsli"
+
 Texture2D g_baseColorTexture : register(t0);
+Texture2D g_normalTexture : register(t2);
 SamplerState g_pointSampler : register(s0);
 
 float4 main(MeshVertexOut output) : SV_TARGET
@@ -21,6 +24,7 @@ float4 main(MeshVertexOut output) : SV_TARGET
         return g_baseColorFactor;
     }
 
+    // BaseColor
     const float2 texcoord = g_baseColorTextureTexcoord == 0 ?
         output.m_texcoord0 :
         output.m_texcoord1;
@@ -31,5 +35,25 @@ float4 main(MeshVertexOut output) : SV_TARGET
     clip(finalColor.a - g_alphaCutoff);
 #endif // USE_MASK
 
+    // Normal
+    // if (g_normalTextureTexcoord != -1)
+    // {
+    //     const float2 texcoord = g_normalTextureTexcoord == 0 ?
+    //         output.m_texcoord0 :
+    //         output.m_texcoord1;
+// 
+    //     return g_normalTexture.Sample(g_pointSampler, texcoord);
+    // }
+
+    // Lighting
+    float3 normal = normalize(output.m_normal.xyz);
+    float3 directionalLightDirection = normalize(g_directionalLightDirection);
+    float NDotL = dot(normal, directionalLightDirection);
+    float halfLambert = NDotL * 0.5f + 0.5f;
+    halfLambert = halfLambert * halfLambert;
+
+    float3 lighting = finalColor.rgb * g_directionalLightColor.rgb * halfLambert;
+    finalColor = float4(lighting.rgb, finalColor.w);
+    
     return finalColor;
 }

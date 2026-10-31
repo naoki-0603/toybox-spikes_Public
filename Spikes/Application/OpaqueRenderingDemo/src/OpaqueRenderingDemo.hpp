@@ -16,6 +16,8 @@
 #include <Asset/Builder/DefaultAssetsBuilder.hpp>
 #include <Graphics/Builder/DefaultRenderResourcesBuilder.hpp>
 
+#include <Graphics/Light/LightManager.hpp>
+
 namespace ts
 {
 	class OpaqueRenderingDemo final : public kit::Application
@@ -33,11 +35,11 @@ namespace ts
 	private:
 		void LoadResources();
 		
-		void CreatePipeline();
 		void CreateRenderPasses();
 		void CreateRenderPackets();
 	private:
 		kit::graphics::Renderer* m_renderer;
+		kit::graphics::LightManager* m_lightManager;
 		kit::asset::AssetManager* m_assetManager;
 		kit::asset::DefaultAssetsBuilder* m_defaultAssetBuilder;
 		kit::graphics::DefaultRenderResourcesBuilder* m_defaultRenderResourcesBuilder;

@@ -23,6 +23,8 @@ namespace ts
 				ShaderResourceHandle m_staticMeshVertexShaderHandle{};
 				ShaderResourceHandle m_meshPBRPixelShaderHandle{};
 				ShaderResourceHandle m_meshPBRWithMaskPixelShaderHandle{};
+				ShaderResourceHandle m_debugLineVertexShaderHandle{};
+				ShaderResourceHandle m_debugLinePixelShaderHandle{};
 			};
 
 			class DefaultRenderResourcesBuilder final
@@ -46,6 +48,9 @@ namespace ts
 
 				[[nodiscard]]
 				PipelineStateResourceHandle GetTransparentPipelineStateHandle() const { return m_transparentPipelineStateHandle; }
+			
+				[[nodiscard]]
+				PipelineStateResourceHandle GetLinePipelineStateHandle() const { return m_linePipelineStateHandle; }
 			private:
 				SamplerResourceHandle m_pointSamplerHandle;
 				SamplerResourceHandle m_linearSamplerHandle;
@@ -56,6 +61,7 @@ namespace ts
 				PipelineStateResourceHandle m_opaquePipelineStateHandle;
 				PipelineStateResourceHandle m_maskPipelineStateHandle;
 				PipelineStateResourceHandle m_transparentPipelineStateHandle;
+				PipelineStateResourceHandle m_linePipelineStateHandle;
 			};
 		} // namespace graphics
 	} // namespace kit

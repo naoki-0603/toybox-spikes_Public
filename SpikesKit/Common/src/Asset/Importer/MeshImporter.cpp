@@ -7,6 +7,8 @@
 
 #include "Asset/Importer/MeshFormat/GLTFMeshImporter.hpp"
 
+#include "Helper/MeshHelper.hpp"
+
 namespace ts
 {
 	namespace kit
@@ -57,27 +59,27 @@ namespace ts
 								sampler.m_minFilter = MeshImporterResult::Sampler::MinFilter::Nearest;
 							}
 							// LINEAR
-							else if (gltfSampler.m_minFilter == 9729)
+							else if (gltfSampler.m_magFilter == 9729)
 							{
 								sampler.m_minFilter = MeshImporterResult::Sampler::MinFilter::Linear;
 							}
 							// NEAREST_MIPMAP_NEAREST
-							else if (gltfSampler.m_minFilter == 9984)
+							else if (gltfSampler.m_magFilter == 9984)
 							{
 								sampler.m_minFilter = MeshImporterResult::Sampler::MinFilter::NearestMipMapNearest;
 							}
 							// LINEAR_MIPMAP_NEAREST
-							else if (gltfSampler.m_minFilter == 9985)
+							else if (gltfSampler.m_magFilter == 9985)
 							{
 								sampler.m_minFilter = MeshImporterResult::Sampler::MinFilter::LinearMipMapNearest;
 							}
 							// NEAREST_MIPMAP_LINEAR
-							else if (gltfSampler.m_minFilter == 9986)
+							else if (gltfSampler.m_magFilter == 9986)
 							{
 								sampler.m_minFilter = MeshImporterResult::Sampler::MinFilter::NearestMipMapLinear;
 							}
 							// LINEAR_MIPMAP_LINEAR
-							else if (gltfSampler.m_minFilter == 9987)
+							else if (gltfSampler.m_magFilter == 9987)
 							{
 								sampler.m_minFilter = MeshImporterResult::Sampler::MinFilter::LinearMipMapLinear;
 							}
@@ -277,34 +279,68 @@ namespace ts
 								TS_ASSERT(false, "対応していないプリミティブトポロジーです");
 							}
 
-							subMesh.m_positions = gltfSubMesh.m_positions;
-
-							if (!gltfSubMesh.m_normals.empty())
+							// Position
 							{
-								subMesh.m_normals = gltfSubMesh.m_normals;
+								subMesh.m_positions = gltfSubMesh.m_positions;
 							}
 
-							if (!gltfSubMesh.m_texcoords0.empty())
+							// Normal
 							{
-								subMesh.m_texcoords0 = gltfSubMesh.m_texcoords0;
+								if (!gltfSubMesh.m_normals.empty())
+								{
+									subMesh.m_normals = gltfSubMesh.m_normals;
+								}
+							}
+							
+							// Texcoords
+							{
+								if (!gltfSubMesh.m_texcoords0.empty())
+								{
+									subMesh.m_texcoords0 = gltfSubMesh.m_texcoords0;
+								}
+
+								if (!gltfSubMesh.m_texcoords1.empty())
+								{
+									subMesh.m_texcoords1 = gltfSubMesh.m_texcoords1;
+								}
+							}
+							
+							// Indices
+							{
+								if (std::holds_alternative<std::vector<u8>>(gltfSubMesh.m_indices))
+								{
+									subMesh.m_indicesU8 = std::get<std::vector<u8>>(gltfSubMesh.m_indices);
+								}
+								else if (std::holds_alternative<std::vector<u16>>(gltfSubMesh.m_indices))
+								{
+									subMesh.m_indicesU16 = std::get<std::vector<u16>>(gltfSubMesh.m_indices);
+								}
+								else if (std::holds_alternative<std::vector<u32>>(gltfSubMesh.m_indices))
+								{
+									subMesh.m_indicesU32 = std::get<std::vector<u32>>(gltfSubMesh.m_indices);
+								}
 							}
 
-							if (!gltfSubMesh.m_texcoords1.empty())
+							// Tangent/Bitangent
 							{
-								subMesh.m_texcoords1 = gltfSubMesh.m_texcoords1;
-							}
+								if (!gltfSubMesh.m_tangents.empty())
+								{
+									subMesh.m_tangents = gltfSubMesh.m_tangents;
+								}
+								else
+								{
+									meshhelper::ComputeTangentsAndBitangentsParameters parameters = {};
+									parameters.m_positions = subMesh.m_positions;
+									parameters.m_uvs = subMesh.m_texcoords0;
+									parameters.m_indicesU8 = subMesh.m_indicesU8;
+									parameters.m_indicesU16 = subMesh.m_indicesU16;
+									parameters.m_indicesU32 = subMesh.m_indicesU32;
 
-							if (std::holds_alternative<std::vector<u8>>(gltfSubMesh.m_indices))
-							{
-								subMesh.m_indicesU8 = std::get<std::vector<u8>>(gltfSubMesh.m_indices);
-							}
-							else if (std::holds_alternative<std::vector<u16>>(gltfSubMesh.m_indices))
-							{
-								subMesh.m_indicesU16 = std::get<std::vector<u16>>(gltfSubMesh.m_indices);
-							}
-							else if (std::holds_alternative<std::vector<u32>>(gltfSubMesh.m_indices))
-							{
-								subMesh.m_indicesU32 = std::get<std::vector<u32>>(gltfSubMesh.m_indices);
+									if (!meshhelper::ComputeTangentsAndBitangents(parameters, subMesh.m_tangents))
+									{
+										TS_WARNING_LOG("タンジェントと従タンジェントの計算に失敗しました。");
+									}
+								}
 							}
 						}
 					}

@@ -17,6 +17,11 @@ namespace ts
 				Matrix m_viewProjection{};
 				Vector4 m_cameraPosition{};
 
+				// DirectionalLight
+				Vector4 m_directionalLightColor{};
+				Vector3 m_directionalLightDirection{};
+				f32 m_directionalLightPadding{};
+
 				f32 m_deltaTime{};
 				f32 m_totalTime{};
 				Vector2 m_padding{};

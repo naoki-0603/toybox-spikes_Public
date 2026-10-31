@@ -210,7 +210,7 @@ namespace ts
 						return false;
 					}
 
-					if (m_highPriorityPopIndex.compare_exchange_weak(popIndex, popIndex + 1, std::memory_order_acquire, std::memory_order_relaxed))
+					if (m_highPriorityPopIndex.compare_exchange_weak(popIndex, popIndex + 1, std::memory_order_relaxed, std::memory_order_relaxed))
 					{
 						while (!m_highPriorityJobQueue[maskIndex].m_isWritten.load(std::memory_order_acquire))
 						{
@@ -246,7 +246,7 @@ namespace ts
 						return false;
 					}
 
-					if (m_lowPriorityPopIndex.compare_exchange_weak(popIndex, popIndex + 1, std::memory_order_acquire, std::memory_order_relaxed))
+					if (m_lowPriorityPopIndex.compare_exchange_weak(popIndex, popIndex + 1, std::memory_order_relaxed, std::memory_order_relaxed))
 					{
 						while (!m_lowPriorityJobQueue[maskIndex].m_isWritten.load(std::memory_order_acquire))
 						{

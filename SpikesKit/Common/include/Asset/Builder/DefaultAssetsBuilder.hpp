@@ -35,10 +35,18 @@ namespace ts
 
 				[[nodiscard]]
 				ShaderAssetHandle GetMeshPBRWithMaskPixelShaderHandle() const noexcept { return m_meshPBRWithMaskPixelShaderHandle; }
+
+				[[nodiscard]]
+				ShaderAssetHandle GetDebugLineVertexShaderHandle() const noexcept { return m_debugLineVertexShaderHandle; }
+
+				[[nodiscard]]
+				ShaderAssetHandle GetDebugLinePixelShaderHandle() const noexcept { return m_debugLinePixelShaderHandle; }
 			private:
 				ShaderAssetHandle m_staticMeshVertexShaderHandle;
 				ShaderAssetHandle m_meshPBRPixelShaderHandle;
 				ShaderAssetHandle m_meshPBRWithMaskPixelShaderHandle;
+				ShaderAssetHandle m_debugLineVertexShaderHandle;
+				ShaderAssetHandle m_debugLinePixelShaderHandle;
 			};
 		} // namespace asset
 	} // namespace kit

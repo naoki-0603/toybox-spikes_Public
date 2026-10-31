@@ -267,9 +267,7 @@ namespace ts
 								const TextureAssetHandle handle = m_database.FindTextureHandleFromHash(
 									material.m_baseColorTexture.m_uriHash
 								);
-
-								const TextureAsset* texture = m_database.FindTexture(handle);
-								desc.m_baseColorHandle = texture->m_resourceHandle;
+								desc.m_baseColorHandle = handle;
 
 								// 定数に保存する
 								pbrMaterialConstants.m_baseColorTextureIndex = 0;
@@ -282,9 +280,7 @@ namespace ts
 								const TextureAssetHandle handle = m_database.FindTextureHandleFromHash(
 									material.m_metallicRoughnessTexture.m_uriHash
 								);
-
-								const TextureAsset* texture = m_database.FindTexture(handle);
-								desc.m_metallicRoughnessHandle = texture->m_resourceHandle;
+								desc.m_metallicRoughnessHandle = handle;
 
 								// 定数に保存する
 								pbrMaterialConstants.m_metallicRoughnessTextureIndex = 1;
@@ -297,9 +293,7 @@ namespace ts
 								const TextureAssetHandle handle = m_database.FindTextureHandleFromHash(
 									material.m_normalTexture.m_uriHash
 								);
-
-								const TextureAsset* texture = m_database.FindTexture(handle);
-								desc.m_normalHandle = texture->m_resourceHandle;
+								desc.m_normalHandle = handle;
 
 								// 定数に保存する
 								pbrMaterialConstants.m_normalTextureIndex = 2;
@@ -312,9 +306,7 @@ namespace ts
 								const TextureAssetHandle handle = m_database.FindTextureHandleFromHash(
 									material.m_occlusionTexture.m_uriHash
 								);
-
-								const TextureAsset* texture = m_database.FindTexture(handle);
-								desc.m_occlusionHandle = texture->m_resourceHandle;
+								desc.m_occlusionHandle = handle;
 
 								// 定数に保存する
 								pbrMaterialConstants.m_occlusionTextureIndex = 3;
@@ -327,9 +319,7 @@ namespace ts
 								const TextureAssetHandle handle = m_database.FindTextureHandleFromHash(
 									material.m_emissiveTexture.m_uriHash
 								);
-
-								const TextureAsset* texture = m_database.FindTexture(handle);
-								desc.m_emissiveHandle = texture->m_resourceHandle;
+								desc.m_emissiveHandle = handle;
 
 								// 定数に保存する
 								pbrMaterialConstants.m_emissiveTextureIndex = 4;
@@ -505,11 +495,8 @@ namespace ts
 
 							std::string convertedName = mesh.m_name;
 							convertedName += "_" + std::to_string(subMeshIndex);
-
-							TS_ASSERT(convertedName.length() < sizeof(subMeshAsset.m_name), "サブメッシュ名が長すぎます。");
-							const u64 copyLength = std::min<u64>(convertedName.length(), sizeof(subMeshAsset.m_name) - 1u);
-							std::memcpy(subMeshAsset.m_name, convertedName.data(), copyLength);
-							subMeshAsset.m_name[copyLength] = '\0';
+							
+							std::memcpy(subMeshAsset.m_name, convertedName.data(), convertedName.length() + 1u);
 
 							std::vector<StaticMeshVertex> vertices = {};
 							vertices.resize(subMesh.m_positions.size());

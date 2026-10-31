@@ -11,6 +11,10 @@ cbuffer SceneConstantsBuffer : register(b0)
     row_major float4x4 g_viewProjection;
     float4 g_cameraPosition;
 
+    float4 g_directionalLightColor;
+    float3 g_directionalLightDirection;
+    float g_directionalLightPadding;
+
     float g_deltaTime;
     float g_totalTime;
     float2 g_scenePadding;

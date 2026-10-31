@@ -19,7 +19,6 @@
 #include <Graphics/RHI/RHI_Buffer.hpp>
 #include <Graphics/RHI/RHI_TextureView.hpp>
 
-
 #define LOAD_TEXTURE_MULTITHREAD (1)
 
 using namespace ts::kit::thread;
@@ -51,7 +50,8 @@ namespace ts
 			"RendererApplication",
 			IVector2(640, 480)
 		),
-		m_renderer(), m_assetManager(),
+		m_renderer(), m_lightManager(),
+		m_assetManager(),
 		m_defaultAssetBuilder(), 
 		m_defaultRenderResourcesBuilder(),
 		m_sponzaMeshHandles(),
@@ -76,6 +76,15 @@ namespace ts
 			desc.m_threadManager = &m_threadManager;
 
 			if (!m_renderer->Create(desc))
+			{
+				return false;
+			}
+		}
+
+		// LightManager
+		{
+			m_lightManager = new kit::graphics::LightManager;
+			if (!m_lightManager)
 			{
 				return false;
 			}
@@ -117,11 +126,21 @@ namespace ts
 		}
 
 		{
+			const ShaderAsset* staticMeshVertexShader = m_assetManager->FindShader(
+				m_defaultAssetBuilder->GetStaticMeshVertexShaderHandle()
+			);
+			const ShaderAsset* meshPBRPixelShader = m_assetManager->FindShader(
+				m_defaultAssetBuilder->GetMeshPBRPixelShaderHandle()
+			);
+			const ShaderAsset* meshPBRWithMashPixelShader = m_assetManager->FindShader(
+				m_defaultAssetBuilder->GetMeshPBRWithMaskPixelShaderHandle()
+			);
+
 			kit::graphics::DefaultRenderResourcesBuilderDesc builderDesc = {};
 			builderDesc.m_renderResourceManager = m_renderer->GetRenderResourceManager();
-			builderDesc.m_staticMeshVertexShaderHandle = m_defaultAssetBuilder->GetStaticMeshVertexShaderHandle();
-			builderDesc.m_meshPBRPixelShaderHandle = m_defaultAssetBuilder->GetMeshPBRPixelShaderHandle();
-			builderDesc.m_meshPBRWithMaskPixelShaderHandle = m_defaultAssetBuilder->GetMeshPBRWithMaskPixelShaderHandle();
+			builderDesc.m_staticMeshVertexShaderHandle = staticMeshVertexShader->m_resourceHandle;
+			builderDesc.m_meshPBRPixelShaderHandle = meshPBRPixelShader->m_resourceHandle;
+			builderDesc.m_meshPBRWithMaskPixelShaderHandle = meshPBRWithMashPixelShader->m_resourceHandle;
 
 			m_defaultRenderResourcesBuilder = new kit::graphics::DefaultRenderResourcesBuilder;
 			if (!m_defaultRenderResourcesBuilder->Build(builderDesc))
@@ -163,6 +182,11 @@ namespace ts
 			m_assetManager = nullptr;
 		}
 
+		if (m_lightManager)
+		{
+			TS_SAFE_RELEASE(m_lightManager);
+		}
+
 		if (m_renderer)
 		{
 			succeeded = m_renderer->Destroy();
@@ -182,6 +206,15 @@ namespace ts
 		{
 			m_sceneConstants.m_cameraPosition = Vector4(m_camera->GetEye(), 1.0f);
 			m_sceneConstants.m_viewProjection = m_camera->GetViewProjection();
+			
+			// ディレクショナルライト
+			{
+				const kit::graphics::DirectionalLight& directionalLight = m_lightManager->GetDirectionalLight();
+
+				m_sceneConstants.m_directionalLightColor = directionalLight.m_color;
+				m_sceneConstants.m_directionalLightDirection = directionalLight.m_direction;
+			}
+
 			m_sceneConstants.m_deltaTime = m_timer.GetDeltaTime();
 			m_sceneConstants.m_totalTime = m_timer.GetTime();
 		}

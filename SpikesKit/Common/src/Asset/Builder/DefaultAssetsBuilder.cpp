@@ -16,7 +16,9 @@ namespace ts
 			DefaultAssetsBuilder::DefaultAssetsBuilder() :
 				m_staticMeshVertexShaderHandle(),
 				m_meshPBRPixelShaderHandle(),
-				m_meshPBRWithMaskPixelShaderHandle()
+				m_meshPBRWithMaskPixelShaderHandle(),
+				m_debugLineVertexShaderHandle(),
+				m_debugLinePixelShaderHandle()
 			{
 			}
 
@@ -73,6 +75,29 @@ namespace ts
 						meshPBRWithMaskPixelShaderConfig.m_macros.push_back(std::move(useMaskMacro));
 
 						m_meshPBRWithMaskPixelShaderHandle = assetManager->LoadShader(meshPBRWithMaskPixelShaderConfig);
+					}
+
+					// DebugLine
+					{
+						// VS
+						LoadShaderConfig debugLineVertexShaderConfig = {};
+						debugLineVertexShaderConfig.m_entryPoint = "main";
+						debugLineVertexShaderConfig.m_options = options;
+						debugLineVertexShaderConfig.m_shaderType = RHI_ShaderType::VertexShader;
+						debugLineVertexShaderConfig.m_target = "vs_5_0";
+						debugLineVertexShaderConfig.m_path = fs::path(k_rootDirectory / "Asset/Shader/2D/DebugLineVS.hlsl").lexically_normal();
+
+						m_debugLineVertexShaderHandle = assetManager->LoadShader(debugLineVertexShaderConfig);
+
+						// PS
+						LoadShaderConfig debugLinePixelShaderConfig = {};
+						debugLinePixelShaderConfig.m_entryPoint = "main";
+						debugLinePixelShaderConfig.m_options = options;
+						debugLinePixelShaderConfig.m_shaderType = RHI_ShaderType::PixelShader;
+						debugLinePixelShaderConfig.m_target = "ps_5_0";
+						debugLinePixelShaderConfig.m_path = fs::path(k_rootDirectory / "Asset/Shader/2D/DebugLinePS.hlsl").lexically_normal();
+
+						m_debugLinePixelShaderHandle = assetManager->LoadShader(debugLinePixelShaderConfig);
 					}
 				}
 

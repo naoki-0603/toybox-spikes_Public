@@ -23,11 +23,11 @@ namespace ts
 
 				ShaderAssetHandle m_shaderAssetHandle{};
 
-				TextureResourceHandle m_baseColorHandle{};
-				TextureResourceHandle m_metallicRoughnessHandle{};
-				TextureResourceHandle m_normalHandle{};
-				TextureResourceHandle m_occlusionHandle{};
-				TextureResourceHandle m_emissiveHandle{};
+				TextureAssetHandle m_baseColorHandle{};
+				TextureAssetHandle m_metallicRoughnessHandle{};
+				TextureAssetHandle m_normalHandle{};
+				TextureAssetHandle m_occlusionHandle{};
+				TextureAssetHandle m_emissiveHandle{};
 
 				SamplerResourceHandle m_baseColorSamplerHandle{};
 				SamplerResourceHandle m_metallicRoughnessSamplerHandle{};

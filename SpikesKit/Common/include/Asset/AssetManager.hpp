@@ -60,8 +60,8 @@ namespace ts
 			{
 				fs::path m_path{};
 
-				ShaderResourceHandle m_staticMeshVertexShaderHandle{};
-				ShaderResourceHandle m_meshPBRPixelShaderHandle{};
+				ShaderAssetHandle m_staticMeshVertexShaderHandle{};
+				ShaderAssetHandle m_meshPBRPixelShaderHandle{};
 
 				// 左手系に変換するか
 				bool m_convertToLeftHanded{};

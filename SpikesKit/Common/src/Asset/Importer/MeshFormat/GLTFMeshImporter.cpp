@@ -305,9 +305,27 @@ namespace ts
 								}
 								else if (attributeName == "TANGENT")
 								{
-									TS_DEBUG_LOG("TODO: 属性TANGENTの実装");
-									// TODO(naoki): 属性TANGENTの実装
-									// 左手座標系に変換する際にTANGENTのZ成分に対しても-1.0fを書ける
+									TS_ASSERT(
+										accessor.component_type == TG3_COMPONENT_TYPE_FLOAT &&
+										accessor.type == TG3_TYPE_VEC4,
+										"未対応"
+									);
+
+									std::vector<Vector4> tangents = ReadData<Vector4>(
+										startData, accessor.count, bufferView.byte_stride
+									);
+
+									// 左手座標系に変換する際にTANGENTのZ成分とW成分に対しても-1.0fを書ける
+									if (convertToLeftHanded)
+									{
+										for (auto& tangent : tangents)
+										{
+											tangent.z *= -1.0f;
+											tangent.w *= -1.0f;
+										}
+									}
+
+									subMesh.m_tangents = std::move(tangents);
 								}
 								else if (attributeName == "TEXCOORD_0")
 								{

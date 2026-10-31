@@ -5,3 +5,4 @@
 
 add_subdirectory(OpaqueRenderingDemo)
 add_subdirectory(TransparentRenderingDemo)
+add_subdirectory(DebugRendererDemo)

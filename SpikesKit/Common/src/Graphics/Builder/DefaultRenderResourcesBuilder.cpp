@@ -23,7 +23,8 @@ namespace ts
 				m_meshShaderBindingsLayoutHandle(),
 				m_opaquePipelineStateHandle(),
 				m_maskPipelineStateHandle(),
-				m_transparentPipelineStateHandle()
+				m_transparentPipelineStateHandle(),
+				m_linePipelineStateHandle()
 			{
 			}
 
@@ -44,6 +45,12 @@ namespace ts
 				);
 				const RHI_Shader* meshPBRWithPixelShader = resourceManager->FindShader(
 					desc.m_meshPBRWithMaskPixelShaderHandle
+				);
+				const RHI_Shader* debugLineVertexShader = resourceManager->FindShader(
+					desc.m_debugLineVertexShaderHandle
+				);
+				const RHI_Shader* debugLinePixelShader = resourceManager->FindShader(
+					desc.m_debugLinePixelShaderHandle
 				);
 
 				// Samplers
@@ -154,6 +161,32 @@ namespace ts
 
 						m_transparentPipelineStateHandle = resourceManager->CreateOrGetPipelineState(
 							transparentPipelineStateDesc
+						);
+					}
+
+					// Line
+					{
+						RHI_PipelineStateDesc linePipelineStateDesc = {};
+						linePipelineStateDesc.m_rtvFormat = RHI_Format::R8G8B8A8_UNorm;
+						linePipelineStateDesc.m_dsvFormat = RHI_Format::D24_UNorm_S8_UInt;
+						linePipelineStateDesc.m_rasterizerState = RHI_RasterizerState::GetFillSolidCullBack();
+						linePipelineStateDesc.m_primitiyTopology = RHI_PrimitiveTopology::LineList;
+						linePipelineStateDesc.m_blendState = RHI_BlendState::GetNoBlend();
+						linePipelineStateDesc.m_depthStencilState = RHI_DepthStencilState::GetDepthOnStencilOn();
+						linePipelineStateDesc.m_vertexShader = debugLineVertexShader;
+						linePipelineStateDesc.m_pixelShader = debugLinePixelShader;
+						linePipelineStateDesc.m_shaderBindingsLayout = resourceManager->FindShaderBindingsLayout(
+							m_meshShaderBindingsLayoutHandle
+						);
+
+						linePipelineStateDesc.m_vertexLayouts =
+						{
+							{ "POSITION", 0u, 0u, 0xFFFFFFFF, RHI_Format::R32G32B32_Float },
+							{ "COLOR", 0u, 0u, 0xFFFFFFFF, RHI_Format::R32_UInt }
+						};
+
+						m_linePipelineStateHandle = resourceManager->CreateOrGetPipelineState(
+							linePipelineStateDesc
 						);
 					}
 				}
