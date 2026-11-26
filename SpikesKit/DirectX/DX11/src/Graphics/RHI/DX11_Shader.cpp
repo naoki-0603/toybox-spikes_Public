@@ -106,7 +106,7 @@ namespace ts
 
 			void DX11_Shader::Release()
 			{
-				TS_SAFE_RELEASE(m_shaderBinary);
+				TS_SAFE_RELEASE_ARRAY(m_shaderBinary);
 
 				switch (m_type)
 				{

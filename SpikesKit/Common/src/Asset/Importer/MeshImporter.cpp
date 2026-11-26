@@ -332,6 +332,7 @@ namespace ts
 									meshhelper::ComputeTangentsAndBitangentsParameters parameters = {};
 									parameters.m_positions = subMesh.m_positions;
 									parameters.m_uvs = subMesh.m_texcoords0;
+									parameters.m_normals = subMesh.m_normals;
 									parameters.m_indicesU8 = subMesh.m_indicesU8;
 									parameters.m_indicesU16 = subMesh.m_indicesU16;
 									parameters.m_indicesU32 = subMesh.m_indicesU32;

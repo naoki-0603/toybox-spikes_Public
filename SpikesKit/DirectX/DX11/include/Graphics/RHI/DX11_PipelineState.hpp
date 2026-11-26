@@ -63,7 +63,7 @@ namespace ts
 				[[nodiscard]]
 				ID3D11InputLayout* GetInputLayout() const noexcept { return m_inputLayout.Get(); }
 			private:
-				[[nodiscared]]
+				[[nodiscard]]
 				bool CreateInputLayout(
 					ID3D11Device* device,
 					const graphics::RHI_Shader* vertexShader,

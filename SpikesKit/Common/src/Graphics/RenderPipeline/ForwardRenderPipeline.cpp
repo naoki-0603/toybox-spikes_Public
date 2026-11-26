@@ -76,14 +76,14 @@ namespace ts
 						recorderIndex < jobCount;
 						++recorderIndex)
 					{
-						renderCommandRecorders[recorderIndex] = &commandRecorders[recorderIndex];
+						renderCommandRecorders[recorderIndex] = &commandRecorders[allocatedJobCount + recorderIndex];
 					}
 
 					// 描画リソースレコーダー
 					RenderResourceRecorder* renderResourceRecorders[8u];
 					for (u32 recorderIndex = 0u; recorderIndex < jobCount; ++recorderIndex)
 					{
-						renderResourceRecorders[recorderIndex] = &resourceRecorders[recorderIndex];
+						renderResourceRecorders[recorderIndex] = &resourceRecorders[allocatedJobCount + recorderIndex];
 					}
 
 					std::latch passLatch(jobCount);

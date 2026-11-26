@@ -56,17 +56,13 @@ namespace ts
 						const Vector2 deltaUV2 = uv2 - uv0;
 
 						// 分母の算出(スケーリング値)
-						const f32 determinant = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-
-						// UVが潰れているなどエラー値がまぎれている
-						if (std::abs(determinant) < 1.0e-6f)
+						const f32 denominator = (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+						if (std::abs(denominator) < 1.0e-6f)
 						{
 							TS_WARNING_LOG("UVが潰れているか無効な値が含まれています");
-
-							outTangents.push_back(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-
 							continue;
 						}
+						const f32 determinant = 1.0f / denominator;
 
 						// 接ベクトルの算出
 						Vector3 tangent = {};
@@ -98,6 +94,12 @@ namespace ts
 
 						// グラム・シュミットの直交化を用いてNormalに対してTangentとBitangentを直角にする
 						Vector3 adjustedTangent = (tangent) - (normal * normal.Dot(tangent));
+						if (adjustedTangent.IsNearlyZero())
+						{
+							outTangents[vertexIndex] = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
+							continue;
+						}
 						adjustedTangent.Normalize();
 
 						const f32 sign = CalculateTangentSign(normal, tangent, bitangent);
@@ -115,6 +117,8 @@ namespace ts
 				std::vector<Vector4>& outTangents
 			)
 			{
+				outTangents.resize(parameters.m_positions.size());
+
 				if (!parameters.m_indicesU8.empty())
 				{
 					return internal::ComputeTangentsAndBitangentsImpl<u8>(

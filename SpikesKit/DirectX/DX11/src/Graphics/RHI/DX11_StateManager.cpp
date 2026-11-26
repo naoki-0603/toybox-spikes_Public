@@ -176,6 +176,7 @@ namespace ts
 					case graphics::RHI_SamplerTextureAddress::Wrap: return D3D11_TEXTURE_ADDRESS_WRAP;
 					case graphics::RHI_SamplerTextureAddress::Clamp: return D3D11_TEXTURE_ADDRESS_CLAMP;
 					case graphics::RHI_SamplerTextureAddress::Border: return D3D11_TEXTURE_ADDRESS_BORDER;
+					case graphics::RHI_SamplerTextureAddress::Mirror: return D3D11_TEXTURE_ADDRESS_MIRROR;
 					}
 
 					TS_ASSERT(false, "未対応か不明なモードです");

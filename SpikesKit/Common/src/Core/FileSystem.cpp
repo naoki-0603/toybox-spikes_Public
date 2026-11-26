@@ -13,19 +13,64 @@ namespace ts
 		{
 			path GetRootDirectory()
 			{
-#ifdef TS_PROJECT_ROOT
-				return path(TS_PROJECT_ROOT);
-#else // TS_PROJECT_ROOT
-#error "TS_PROJECT_ROOT is not defined in CMakeLists.txt!"
-				return path("");
-#endif //! TS_PROJECT_ROOT
+				const path exeDir = GetExecutableDirectory();
+				if (exeDir.empty())
+				{
+					return path{};
+				}
+
+				// .exe のディレクトリから上方向へ最大4階層まで "Asset" ディレクトリを探索
+				path current = exeDir;
+				for (int depth = 0; depth <= 4; ++depth)
+				{
+					std::error_code ec;
+					if (std::filesystem::exists(current / L"Asset", ec) && !ec)
+					{
+						return current;
+					}
+
+					const path parent = current.parent_path();
+					if (parent == current)
+					{
+						break;
+					}
+					current = parent;
+				}
+
+				// 見つからない場合のフォールバックとして実行ファイル配置ディレクトリを返す
+				return exeDir;
 			}
 
 			path GetExecutableDirectory()
 			{
-				char path[MAX_PATH];
-				GetModuleFileNameA(NULL, path, MAX_PATH);
-				return fs::path(path).parent_path();
+				std::wstring buffer(MAX_PATH, L'\0');
+
+				while (true)
+				{
+					const DWORD length = ::GetModuleFileNameW(
+						nullptr,
+						buffer.data(),
+						static_cast<DWORD>(buffer.size())
+					);
+
+					if (length == 0)
+					{
+						return path{};
+					}
+
+					if (length < buffer.size())
+					{
+						buffer.resize(length);
+						return path(buffer).parent_path();
+					}
+
+					// 260文字(MAX_PATH)を超える長いパスに対応（無限拡張ガード付き）
+					if (buffer.size() >= 32768)
+					{
+						return path{};
+					}
+					buffer.resize(buffer.size() * 2);
+				}
 			}
 		} // namespace fs
 	} // namespace kit

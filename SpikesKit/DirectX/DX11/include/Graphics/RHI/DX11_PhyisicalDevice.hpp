@@ -18,8 +18,9 @@ namespace ts
 			{
 				static const u32 k_amdVendorId = 0x1002;
 				static const u32 k_nvidiaVendorId = 0x10DE;
+				static const u32 k_intelVenderId = 0x8086;
+				static const u32 k_microsoftVenderId = 0x1414;
 			} // namespace internal
-
 
 			class DX11_PhyisicalDevice final : public graphics::RHI_PhyisicalDevice
 			{

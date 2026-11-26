@@ -16,7 +16,7 @@
 		using underlying = std::underlying_type_t<Enum>; \
 		return static_cast<Enum>(static_cast<underlying>(lhs) | static_cast<underlying>(rhs)); \
 	} \
-	inline Enum operator|=(Enum lhs, Enum rhs) \
+	inline Enum& operator|=(Enum& lhs, Enum rhs) \
 	{ \
 		using underlying = std::underlying_type_t<Enum>; \
 		lhs = static_cast<Enum>(static_cast<underlying>(lhs) | static_cast<underlying>(rhs)); \
@@ -27,7 +27,7 @@
 		using underlying = std::underlying_type_t<Enum>; \
 		return static_cast<Enum>(static_cast<underlying>(lhs) & static_cast<underlying>(rhs)); \
 	} \
-	inline Enum operator&=(Enum lhs, Enum rhs) \
+	inline Enum& operator&=(Enum& lhs, Enum rhs) \
 	{ \
 		using underlying = std::underlying_type_t<Enum>; \
 		lhs = static_cast<Enum>(static_cast<underlying>(lhs) & static_cast<underlying>(rhs)); \

@@ -62,10 +62,18 @@ namespace ts
 				{
 					TS_ERROR_LOG("{} のコンパイルに失敗しました。", config.m_path.string());
 					
-					char errorMsg[1024]{};
-					std::memcpy(errorMsg, errorMessage->GetBufferPointer(), errorMessage->GetBufferSize());
+					if (errorMessage)
+					{
+						const std::string errorMsg(
+							reinterpret_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()
+						);
 
-					TS_FATAL_LOG("Error: {}", errorMsg);
+						TS_FATAL_LOG("Error: {}", errorMsg);
+					}
+					else
+					{
+						TS_FATAL_LOG("Error: シェーダーファイルが見つからないか、エラーメッセージが生成されませんでした。");
+					}
 
 					return {};
 				}

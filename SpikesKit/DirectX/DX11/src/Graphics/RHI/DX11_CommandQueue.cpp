@@ -168,10 +168,13 @@ namespace ts
 								{
 									const u32 numBuffers = (vsConstantBuffers.m_maxSlot - vsConstantBuffers.m_minSlot) + 1u;
 
-									ID3D11Buffer* buffers[graphics::k_maxCBVSlots];
+									ID3D11Buffer* buffers[graphics::k_maxCBVSlots] = {};
 									for (u32 i = 0u; i < numBuffers; ++i)
 									{
-										buffers[i] = static_cast<const DX11_Buffer*>(vsConstantBuffers.m_buffers[i])->GetBuffer();
+										if (vsConstantBuffers.m_buffers[vsConstantBuffers.m_minSlot + i])
+										{
+											buffers[i] = static_cast<const DX11_Buffer*>(vsConstantBuffers.m_buffers[vsConstantBuffers.m_minSlot + i])->GetBuffer();
+										}
 									}
 
 									m_context->VSSetConstantBuffers(
@@ -190,10 +193,13 @@ namespace ts
 								{
 									const u32 numBuffers = (psConstantBuffers.m_maxSlot - psConstantBuffers.m_minSlot) + 1u;
 
-									ID3D11Buffer* buffers[graphics::k_maxCBVSlots];
+									ID3D11Buffer* buffers[graphics::k_maxCBVSlots] = {};
 									for (u32 i = 0u; i < numBuffers; ++i)
 									{
-										buffers[i] = static_cast<const DX11_Buffer*>(psConstantBuffers.m_buffers[i])->GetBuffer();
+										if (psConstantBuffers.m_buffers[psConstantBuffers.m_minSlot + i])
+										{
+											buffers[i] = static_cast<const DX11_Buffer*>(psConstantBuffers.m_buffers[psConstantBuffers.m_minSlot + i])->GetBuffer();
+										}
 									}
 
 									m_context->PSSetConstantBuffers(
@@ -215,10 +221,13 @@ namespace ts
 								{
 									const u32 numViews = (psTextureViews.m_maxSlot - psTextureViews.m_minSlot) + 1u;
 
-									ID3D11ShaderResourceView* views[graphics::k_maxSRVSlots];
+									ID3D11ShaderResourceView* views[graphics::k_maxSRVSlots] = {};
 									for (u32 i = 0u; i < numViews; ++i)
 									{
-										views[i] = static_cast<const DX11_TextureView*>(psTextureViews.m_views[i])->GetShaderResourceView();
+										if (psTextureViews.m_views[psTextureViews.m_minSlot + i])
+										{
+											views[i] = static_cast<const DX11_TextureView*>(psTextureViews.m_views[psTextureViews.m_minSlot + i])->GetShaderResourceView();
+										}
 									}
 
 									m_context->PSSetShaderResources(

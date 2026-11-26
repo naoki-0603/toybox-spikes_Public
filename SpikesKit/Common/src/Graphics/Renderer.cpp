@@ -24,20 +24,6 @@ namespace ts
 {
 	namespace kit
 	{
-		namespace fs
-		{
-			[[nodiscard]]
-			path GetProjectFullPath()
-			{
-#ifdef TS_PROJECT_ROOT
-				return path(TS_PROJECT_ROOT);
-#else // TS_PROJECT_ROOT
-#error "TS_PROJECT_ROOT is not defined in CMakeLists.txt!"
-				return path("");
-#endif //! TS_PROJECT_ROOT
-			}
-		} // namespace
-
 		namespace graphics
 		{
 			static void RenderJobSystemWork(void* jobSystem)
@@ -356,12 +342,12 @@ namespace ts
 
 			bool Renderer::CreateRHIObjects(const RendererInitDesc& desc)
 			{
-				const fs::path projectFullPath = fs::GetProjectFullPath();
+				const fs::path projectFullPath = fs::GetRootDirectory();
 
-#ifdef TS_DEBUG || TS_RELEASE
+#if defined(TS_DEBUG)
 				const fs::path moduleFullPath = projectFullPath / "Bin" / "Plugins" / "Debug" / "SpikesKit_DX11.dll";
 
-				HMODULE rhiModule = LoadLibraryA(moduleFullPath.string().c_str());
+				HMODULE rhiModule = LoadLibraryW(moduleFullPath.wstring().c_str());
 				if (!rhiModule)
 				{
 					TS_FATAL_LOG("モジュール {} の読み込みに失敗しました。", moduleFullPath.string());
@@ -385,10 +371,10 @@ namespace ts
 					return false;
 				}
 
-#else // (TS_DEBUG || TS_RELEASE)
+#else // defined(TS_DEBUG)
 				const fs::path moduleFullPath = projectFullPath / "Bin" / "Plugins" / "Release" / "SpikesKit_DX11.dll";
 
-				HMODULE rhiModule = LoadLibraryA(moduleFullPath.string().c_str());
+				HMODULE rhiModule = LoadLibraryW(moduleFullPath.wstring().c_str());
 				if (!rhiModule)
 				{
 					TS_FATAL_LOG("モジュール {} の読み込みに失敗しました。", moduleFullPath.string());
@@ -411,7 +397,7 @@ namespace ts
 				{
 					return false;
 				}
-#endif // !(TS_DEBUG || TS_RELEASE)
+#endif // !defined(TS_DEBUG)
 
 				// ShaderCompiler
 				{

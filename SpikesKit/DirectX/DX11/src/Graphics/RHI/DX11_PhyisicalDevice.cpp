@@ -94,7 +94,9 @@ namespace ts
 					}
 
 					if (desc.VendorId == dx11::internal::k_amdVendorId ||
-						desc.VendorId == dx11::internal::k_nvidiaVendorId)
+						desc.VendorId == dx11::internal::k_nvidiaVendorId ||
+						desc.VendorId == dx11::internal::k_intelVenderId ||
+						desc.VendorId == dx11::internal::k_microsoftVenderId)
 					{
 						TS_INFO_LOG("DedicatedVideoMemory: {}MB", ToMB(ToKB(desc.DedicatedVideoMemory)));
 						TS_INFO_LOG("DedicatedSystemMemory: {}MB", ToMB(ToKB(desc.DedicatedSystemMemory)));
@@ -105,6 +107,10 @@ namespace ts
 				}
 
 				m_adapter.Attach(enumeratedAdapter.Detach());
+				if (!m_adapter)
+				{
+					return false;
+				}
 
 				return true;
 			}

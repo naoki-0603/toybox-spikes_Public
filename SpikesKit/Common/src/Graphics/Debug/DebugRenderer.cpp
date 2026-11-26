@@ -59,7 +59,7 @@ namespace ts
 				RHI_Buffer* vb = resourceManager->FindBuffer(m_vbHandle);
 				vb->WriteData(
 					m_vertices.data(),
-					m_vertices.size(),
+					sizeof(DebugVertex) * m_vertices.size(),
 					0u
 				);
 			}
