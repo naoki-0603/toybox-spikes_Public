@@ -51,14 +51,14 @@ RHI (Rendering Hardware Interface) の抽象化検証にとどまらず、以下
 API に依存しないフロントエンド（コマンド構築層）と、DX11 API を直接制御するバックエンドを完全に分離しています。
 
 * **PSO Emulation:** DX11 上でありながら、DX12 の Root Signature や PipelineStateObject (PSO) に準拠した設計をエミュレーション。
-* **Safe ABI Boundary:** DLL 境界を越える際、異なるCランタイム（CRT）間のヒープ破損（Heap Corruption）リスクを回避するため、内部 `Release()` (`delete this;`) を用いた確実な寿命管理を実施。
+* **Safe DLL Memory Management:** DLL 境界を越える際、異なるCランタイム（CRT）間のヒープ破損（Heap Corruption）リスクを回避するため、内部 `Release()` (`delete this;`) を用いた確実な寿命管理を実施。
 
 ### 3. Asynchronous Asset Pipeline
 メインスレッドをブロックしない堅牢な非同期ロードパイプラインと、型安全なリソース管理基盤です。
 
-* **Stateless Asset Importers (Texture / glTF 2.0)** インポーターから状態変数を排除したステートレス設計（純粋関数化）により、複数スレッドからの同時アクセス（デコード）を安全に実行。
+* **Stateless Asset Importers (Texture / glTF 2.0):** インポーターから状態変数を排除したステートレス設計（純粋関数化）により、複数スレッドからの同時アクセス（デコード）を安全に実行。
 * **Minimized Critical Sections:** ファイル I/O とコンパイルをスレッドローカルで実行し、最後の SlotMap 登録時のみ Read-Write Lock を使用することで、メインスレッドのブロッキングを最小化。
-* **Zero-Cost Abstraction:** ファントム型（`TypedHandle<T>`）と `SlotMap` を組み合わせることで、実行時の VTable オーバーヘッドを完全に排除しつつ、O(1) の高速なアセットアクセスと型安全性を両立。
+* **Zero-Cost Abstraction:** ファントム型（`TypedHandle<T>`）と `SlotMap` を組み合わせることで、実行時の型チェックやキャストのコストを0に抑えつつ、O(1) の高速なアセットアクセスと型安全性を両立。
 ## 🛠️ Build Instructions
 
 本プロジェクトは Windows 環境および Visual Studio 向けに最適化された CMake ビルドシステムを構築しています。開発者の環境構築負荷（I/O）を最小化するため、自動セットアップ用のバッチスクリプトを用意しています。
@@ -71,7 +71,7 @@ API に依存しないフロントエンド（コマンド構築層）と、DX11
 
 * **Build Tool:** CMake 3.xx+
 
-* **SDK:** Vulkan SDK (Vulkan API バックエンド検証用)
+* **SDK:** Vulkan SDK (※現在の実装はDirectX 11のみですが、今後の対応を見据えてビルド構成に組み込んでいるため必要となります)
 
 ### 2. Setup & Build
 
